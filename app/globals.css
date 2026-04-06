@@ -12,7 +12,34 @@ body {
   outline-offset: 2px;
 }
 
-/* Lesson content tables */
+/* ── Lesson body typography ─────────────────────────────────────────────── */
+
+.lesson-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+/* Bold lead sentence rendered via <strong> as first child of a paragraph */
+.lesson-body p > strong:first-child {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ── Inline code chips ──────────────────────────────────────────────────── */
+
+.lesson-body code {
+  font-family: monospace;
+  font-size: 12px;
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent-primary-text);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+
 .lesson-body table {
   width: 100%;
   border-collapse: collapse;
@@ -22,27 +49,24 @@ body {
 
 .lesson-body th,
 .lesson-body td {
-  padding: 7px 12px;
+  padding: 8px 12px;
   text-align: left;
   border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
 }
 
 .lesson-body th {
   background-color: var(--bg-surface);
+  color: var(--accent-primary-text);
   font-weight: 600;
 }
 
-.lesson-body td {
+/* Alternating row backgrounds */
+.lesson-body tbody tr:nth-child(odd) td {
   background-color: var(--bg-base);
+  color: var(--text-primary);
 }
 
-.lesson-body code {
-  font-family: monospace;
-  font-size: 12px;
+.lesson-body tbody tr:nth-child(even) td {
   background-color: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  padding: 1px 5px;
-  color: var(--accent-primary-text);
+  color: var(--text-primary);
 }
