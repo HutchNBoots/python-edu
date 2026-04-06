@@ -11,3 +11,38 @@ body {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
+
+/* Lesson content tables */
+.lesson-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.lesson-body th,
+.lesson-body td {
+  padding: 7px 12px;
+  text-align: left;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.lesson-body th {
+  background-color: var(--bg-surface);
+  font-weight: 600;
+}
+
+.lesson-body td {
+  background-color: var(--bg-base);
+}
+
+.lesson-body code {
+  font-family: monospace;
+  font-size: 12px;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent-primary-text);
+}

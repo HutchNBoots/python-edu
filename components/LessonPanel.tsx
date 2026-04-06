@@ -44,6 +44,7 @@ export default function LessonPanel({
 
       {/* Explanation body */}
       <div
+        className="lesson-body"
         style={{
           fontSize: "13px",
           color: "var(--text-secondary)",

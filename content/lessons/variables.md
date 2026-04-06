@@ -25,16 +25,16 @@ name = "Alex"
 
 That line creates a box called `name` and puts the text `"Alex"` inside it. Done.
 
-## The four main types
+## The four main data types
 
 Python has four types you'll use constantly:
 
-| Type | Example | What it is |
-|------|---------|------------|
-| `str` | `"hello"` | Text (short for *string*) |
-| `int` | `42` | A whole number |
-| `float` | `3.14` | A number with a decimal |
-| `bool` | `True` | Either `True` or `False` |
+| Type | What it stores | Example value |
+|------|----------------|---------------|
+| `str` | Text (short for *string*) | `"hello"` |
+| `int` | A whole number | `42` |
+| `float` | A number with a decimal point | `3.14` |
+| `bool` | True or False — nothing else | `True` |
 
 Python figures out the type automatically — you never have to spell it out.
 
