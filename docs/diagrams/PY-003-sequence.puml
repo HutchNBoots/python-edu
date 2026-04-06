@@ -1,0 +1,49 @@
+@startuml PY-003 Sequence Diagram — Error to Friendly Message
+
+title PY-003: Runtime Error → API Call → Friendly Message Displayed
+
+actor Learner
+participant "TryItTabPanel\n(browser)" as Panel
+participant "Pyodide\n(browser WASM)" as Pyodide
+participant "POST /api/explain-error\n(Next.js route handler)" as API
+participant "Claude Haiku\n(Anthropic API)" as Haiku
+participant "OutputPanel" as Output
+
+== Code runs and fails ==
+
+Learner -> Panel : clicks Run
+Panel -> Pyodide : runPythonAsync(code)
+Pyodide --> Panel : throws — raw traceback
+
+== Friendly error flow ==
+
+Panel -> Output : show loading state\n("Explaining error…")
+Panel -> API : POST { code, rawError }
+note right of API
+  Runs server-side.
+  ANTHROPIC_API_KEY never
+  reaches the browser.
+end note
+
+API -> Haiku : messages: [\n  system: encourage, plain English,\n           one paragraph, no jargon\n  user: "Code: {code}\nError: {rawError}"\n]
+
+alt Haiku responds within timeout
+  Haiku --> API : friendly explanation string
+  API --> Panel : { explanation }
+  Panel -> Output : display FriendlyMessage\nin var(--accent-orange)
+  Panel -> Output : render TechnicalToggle\n(hidden by default)
+else API timeout or error
+  API --> Panel : { fallback: true }
+  Panel -> Output : display static fallback message\n"Something went wrong — check your\ncode for typos and try again!"
+end
+
+== Learner inspects raw error ==
+
+Learner -> Output : clicks "Show technical detail"
+Output -> Output : expand RawTraceback\naria-expanded=true
+Output --> Learner : sees raw Python traceback
+
+Learner -> Output : clicks "Hide technical detail"
+Output -> Output : collapse RawTraceback\naria-expanded=false
+
+@enduml

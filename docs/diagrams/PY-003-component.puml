@@ -1,0 +1,54 @@
+@startuml PY-003 Component Diagram — Friendly Error Display
+
+title PY-003: Error Display Panel with Toggle
+
+skinparam componentStyle rectangle
+
+package "TryItTabPanel" {
+
+  component "[CodeEditor]\nlearner's code" as "CodeEditor"
+
+  package "OutputPanel (extended)" {
+
+    component "[OutputDisplay]\nnormal stdout —\nvar(--text-primary)" as "OutputDisplay"
+
+    package "ErrorDisplay [visible when error present]" {
+      component "[ErrorIcon]\nwarning symbol\naria-hidden" as "ErrorIcon"
+      component "[FriendlyMessage]\nplain-English explanation\nfrom Claude Haiku\nvar(--accent-orange)\nencouraging tone" as "FriendlyMessage"
+      component "[TechnicalToggle]\n'Show technical detail' / 'Hide'\nbutton, text-muted\nvar(--border-subtle) border" as "TechnicalToggle"
+      component "[RawTraceback]\nhidden by default\nrevealed by toggle\nmonospace, code-muted\naria-expanded on toggle" as "RawTraceback"
+    }
+
+    component "[FallbackMessage]\nshown if Haiku API call fails\nstatic, encouraging text\nvar(--accent-orange)" as "FallbackMessage"
+  }
+}
+
+package "API Layer" {
+  component "[POST /api/explain-error]\nNext.js Route Handler\nserver-side only\nholds ANTHROPIC_API_KEY" as "RouteHandler"
+  component "[Claude Haiku\nAnthropic API]" as "Haiku"
+}
+
+"CodeEditor" --> "RouteHandler" : { code, rawError } on run failure
+"RouteHandler" --> "Haiku" : prompt with code + error\nsystem: encouraging tone,\nno jargon, plain English
+"Haiku" --> "RouteHandler" : friendly explanation string
+"RouteHandler" --> "FriendlyMessage" : explanation text
+
+"RouteHandler" ..> "FallbackMessage" : on API timeout / failure
+
+"TechnicalToggle" --> "RawTraceback" : toggles visibility\naria-expanded
+
+note right of "RouteHandler"
+  API key never exposed to browser.
+  Stateless — no conversation history.
+  Each error explanation is independent.
+end note
+
+note bottom of "FriendlyMessage"
+  System prompt instructs Haiku:
+  — one short paragraph
+  — casual, encouraging tone
+  — never blame the learner
+  — no raw Python jargon
+end note
+
+@enduml

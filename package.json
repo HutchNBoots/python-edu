@@ -11,6 +11,7 @@
     "test:watch": "jest"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
     "gray-matter": "^4.0.3",
     "next": "^16.2.2",
     "react": "^19.0.0",
