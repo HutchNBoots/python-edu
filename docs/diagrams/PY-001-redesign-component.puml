@@ -8,52 +8,52 @@ package "ThemeProvider (app root)" {
 
   package "TitleBar [Row 1 · 52px · bg-surface]" {
     component "[BrandMark]\ndragon🐉.py" as Brand
-    component "[SkillProgressBar]\nflex-1, max-width 220px" as SkillBar
-    component "[SkillLabel]\nSkill N of 3" as SkillLabel
-    component "[StreakPill]\n🔥 day count\norange tones" as Streak
-    component "[XPPill]\ntotal XP\nprimary tones" as XP
+    component "[SkillProgressBar]\nflex-1, max-width 220px" as "SkillProgressBar"
+    component "[SkillLabel]\nSkill N of 3" as "SkillLabel"
+    component "[StreakPill]\n🔥 day count\norange tones" as "StreakPill"
+    component "[XPPill]\ntotal XP\nprimary tones" as "XPPill"
   }
 
   package "SkillBar [Row 2 · 40px · bg-surface]" {
-    component "[PathLabel]\nmuted 'Path'" as PathLabel
-    component "[PathPill: Easy]\ncompleted=green\nactive=primary\nlocked=muted" as EasyPill
-    component "[PathPill: Mid]" as MidPill
-    component "[PathPill: Hard]" as HardPill
-    component "[LessonPosition]\nVariables · Lesson 1 of 3" as LessonPos
+    component "[PathLabel]\nmuted 'Path'" as "PathLabel"
+    component "[PathPill: Easy]\ncompleted=green\nactive=primary\nlocked=muted" as "PathPillEasy"
+    component "[PathPill: Mid]" as "PathPillMid"
+    component "[PathPill: Hard]" as "PathPillHard"
+    component "[LessonPosition]\nVariables · Lesson 1 of 3" as "LessonPosition"
   }
 
   package "ContentArea [Row 3 · remaining height · two columns]" {
 
     package "LessonPanel [left col · bg-base · overflow-y auto]" {
-      component "[LessonHeading]\n17px medium, text-primary" as Heading
-      component "[LessonBody]\n13px, text-secondary, lh 1.75" as Body
-      component "[KeyConceptBox]\nprimary-subtle bg\nprimary-border border" as KeyConcept
-      component "[XPRewardNotice]\n+XP badge, accent-primary" as XPReward
-      component "[SkillProgressBarGreen]\nbottom of panel" as GreenBar
+      component "[LessonHeading]\n17px medium, text-primary" as "LessonHeading"
+      component "[LessonBody]\n13px, text-secondary, lh 1.75" as "LessonBody"
+      component "[KeyConceptBox]\nprimary-subtle bg\nprimary-border border" as "KeyConceptBox"
+      component "[XPRewardNotice]\n+XP badge, accent-primary" as "XPRewardNotice"
+      component "[SkillProgressBarGreen]\nbottom of panel" as "SkillProgressBarGreen"
     }
 
     package "CodePanel [right col · bg-base · flex column]" {
-      component "[CodeLabel]\nuppercase, text-muted" as CodeLabel
-      component "[SyntaxBlock]\ncode-bg, flex-1\ntoken colour mapping" as SyntaxBlock
+      component "[CodeLabel]\nuppercase, text-muted" as "CodeLabel"
+      component "[SyntaxBlock]\ncode-bg, flex-1\ntoken colour mapping" as "SyntaxBlock"
       package "ButtonRow [pinned bottom]" {
-        component "[TryItButton]\nprimary, flex-1, →\naria-label: Go to the exercise..." as TryIt
-        component "[HelpMeButton]\nsecondary, fixed width\naria-label: Get a hint..." as HelpMe
+        component "[TryItButton]\nprimary, flex-1, →\naria-label: Go to the exercise..." as "TryItButton"
+        component "[HelpMeButton]\nsecondary, fixed width\naria-label: Get a hint..." as "HelpMeButton"
       }
     }
   }
 }
 
 package "Token System" {
-  file "/styles/themes/dragon.ts\n(dark theme tokens)" as DarkTheme
-  file "/styles/themes/light.ts\n(light theme tokens)" as LightTheme
-  component "[ThemeProvider]\napplies tokens to :root\nreads/writes localStorage\nkey: dragonpy-theme" as ThemeProvider
+  file "/styles/themes/dark.ts\n(dark theme tokens)" as "DarkTheme"
+  file "/styles/themes/light.ts\n(light theme tokens)" as "LightTheme"
+  component "[ThemeProvider]\napplies tokens to :root\nreads/writes localStorage\nkey: dragonpy-theme" as "ThemeProvider"
 }
 
-DarkTheme --> ThemeProvider : default (dark)
-LightTheme --> ThemeProvider : alternate
-ThemeProvider --> Brand : CSS custom properties on :root
+"DarkTheme" --> "ThemeProvider" : alternate
+"LightTheme" --> "ThemeProvider" : default (light)
+"ThemeProvider" --> Brand : CSS custom properties on :root
 
-note right of SyntaxBlock
+note right of "SyntaxBlock"
   Token mapping:
   comments    → --code-comment
   keywords    → --code-keyword
@@ -62,7 +62,7 @@ note right of SyntaxBlock
   numbers     → --code-value
 end note
 
-note bottom of KeyConceptBox
+note bottom of "KeyConceptBox"
   No raw hex values in any component.
   All colours via CSS custom properties.
 end note
