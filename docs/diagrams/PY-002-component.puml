@@ -1,0 +1,69 @@
+@startuml PY-002 Component Diagram — Tabbed Lesson Page
+
+title PY-002: Right Column Tabs — Example & Try it
+
+skinparam componentStyle rectangle
+
+package "LessonPage [/lessons/[slug]]" {
+
+  package "LessonPanel [left col · unchanged]" {
+    component "[LessonHeading]" as "LessonHeading"
+    component "[LessonBody]" as "LessonBody"
+    component "[KeyConceptBox]" as "KeyConceptBox"
+    component "[XPRewardNotice]" as "XPRewardNotice"
+    component "[SkillProgressBarGreen]" as "GreenBar"
+  }
+
+  package "RightColumn [right col · bg-base · flex column]" {
+
+    package "TabBar [top of right col]" {
+      component "[ExampleTab]\n'see how it works'\nactive = accent-primary underline" as "ExampleTab"
+      component "[TryItTab]\n'write your own code'\nactive = accent-primary underline" as "TryItTab"
+    }
+
+    package "ExampleTabPanel [visible when Example active]" {
+      component "[CodeLabel]\nuppercase CODE EXAMPLE" as "CodeLabel"
+      component "[SyntaxBlock]\nstatic code from frontmatter\nflex-1, themed scrollbar 4px" as "SyntaxBlock"
+      package "ExampleButtonRow" {
+        component "[TryItYourselfButton]\nprimary → switches to Try it tab" as "TryItYourselfButton"
+        component "[HelpMeButton_Example]\nsecondary" as "HelpMeExample"
+      }
+    }
+
+    package "TryItTabPanel [visible when Try it active]" {
+      component "[CodeEditor]\ntextarea, monospace 12px\n2px accent-primary border\npre-populated with starter code\nthemed scrollbar 4px" as "CodeEditor"
+      component "[OutputPanel]\npre-formatted stdout/stderr\nor plain-English error\nthemed scrollbar 4px" as "OutputPanel"
+      package "TryItButtonRow" {
+        component "[RunButton]\naccent-green, triggers Pyodide" as "RunButton"
+        component "[ResetButton]\nrestores starter code" as "ResetButton"
+        component "[HelpMeButton_TryIt]\nsecondary" as "HelpMeTryIt"
+      }
+    }
+  }
+}
+
+package "Browser Runtime" {
+  component "[PyodideProvider]\nloads once on mount\nexposes runCode()" as "PyodideProvider"
+  component "[Pyodide WASM]\nfull CPython, no server" as "PyodideWasm"
+}
+
+"RunButton" --> "PyodideProvider" : runCode(editorValue)
+"PyodideProvider" --> "PyodideWasm" : execute
+"PyodideWasm" --> "OutputPanel" : stdout / plain-English error
+"ResetButton" --> "CodeEditor" : restore starter code
+"TryItYourselfButton" --> "TryItTab" : setActiveTab('tryit')
+
+note right of "CodeEditor"
+  Themed scrollbar:
+  4px wide
+  thumb: var(--code-chip-border)
+  track: panel background
+end note
+
+note bottom of "PyodideWasm"
+  Runs entirely in the browser.
+  Raw tracebacks never shown —
+  plain English error only.
+end note
+
+@enduml

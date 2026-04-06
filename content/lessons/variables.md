@@ -13,6 +13,13 @@ codeExample: |
   print(name)    # Alex
   print(age)     # 14
   print(height)  # 1.65
+starterCode: |
+  # Create your own variables and print them out
+  name = "change this to your name"
+  age = 0  # change this to your age
+
+  print(name)
+  print(age)
 ---
 
 **Think of a variable like a labelled box.** You put something inside it, give the box a name, and then you can grab it whenever you need it. In Python, creating a variable is as simple as writing `name = "Alex"` — that's it, no extra setup needed.

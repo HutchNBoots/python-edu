@@ -1,0 +1,66 @@
+@startuml PY-002 Sequence Diagram — Tabbed Lesson Page
+
+title PY-002: Example & Try it Tab Flows
+
+actor Learner
+participant "LessonPage\n/lessons/[slug]" as Page
+participant "RightColumn\n(TabBar)" as Tabs
+participant "ExampleTabPanel" as ExPanel
+participant "TryItTabPanel" as TryPanel
+participant "PyodideProvider" as Provider
+participant "Pyodide WASM\n(browser)" as Pyodide
+
+== Page load — Example tab shown by default ==
+
+Learner -> Page : navigates to /lessons/[slug]
+Page -> Provider : mount — loadPyodide() in background
+Page -> Tabs : render TabBar, active = Example
+Tabs -> ExPanel : render static SyntaxBlock\n(code from frontmatter)
+ExPanel --> Learner : sees Example tab with code + buttons
+
+== Switching to Try it via tab click ==
+
+Learner -> Tabs : clicks "Try it" tab
+Tabs -> TryPanel : show TryItTabPanel
+TryPanel -> TryPanel : pre-populate editor\nwith starter code (frontmatter)
+TryPanel --> Learner : sees editor + output panel + buttons
+
+== Switching to Try it via Try it yourself button ==
+
+Learner -> ExPanel : clicks "Try it yourself"
+ExPanel -> Tabs : setActiveTab('tryit')
+Tabs -> TryPanel : show TryItTabPanel
+TryPanel --> Learner : sees editor
+
+== Run — success ==
+
+Learner -> TryPanel : edits code, clicks Run
+TryPanel -> TryPanel : clear output panel
+TryPanel -> Provider : runCode(editorValue)
+note right of Provider
+  Pyodide already loaded.
+  No server call made.
+end note
+Provider -> Pyodide : execute code string
+Pyodide --> Provider : stdout
+Provider -> TryPanel : display stdout in OutputPanel
+TryPanel --> Learner : sees result (target < 3s)
+
+== Run — error ==
+
+Learner -> TryPanel : clicks Run (broken code)
+TryPanel -> Provider : runCode(editorValue)
+Provider -> Pyodide : execute code string
+Pyodide --> Provider : stderr / traceback
+Provider -> Provider : convert to plain-English message
+Provider -> TryPanel : display friendly error in OutputPanel
+TryPanel --> Learner : sees plain-English explanation\n(raw traceback never shown)
+
+== Reset ==
+
+Learner -> TryPanel : clicks Reset
+TryPanel -> TryPanel : restore editor to starter code
+TryPanel -> TryPanel : clear output panel
+TryPanel --> Learner : editor back to original state
+
+@enduml

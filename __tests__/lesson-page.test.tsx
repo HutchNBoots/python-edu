@@ -6,12 +6,12 @@ import { render, screen } from "@testing-library/react";
 import TitleBar from "@/components/TitleBar";
 import SkillBar from "@/components/SkillBar";
 import LessonPanel from "@/components/LessonPanel";
-import CodePanel from "@/components/CodePanel";
+import ExampleTabPanel from "@/components/ExampleTabPanel";
 import PathPill from "@/components/PathPill";
 import KeyConceptBox from "@/components/KeyConceptBox";
 import XPRewardNotice from "@/components/XPRewardNotice";
-import TryItButton from "@/components/TryItButton";
 import HelpMeButton from "@/components/HelpMeButton";
+
 
 // ---------------------------------------------------------------------------
 // TitleBar
@@ -212,18 +212,18 @@ describe("KeyConceptBox", () => {
 });
 
 // ---------------------------------------------------------------------------
-// CodePanel — code block and buttons
+// ExampleTabPanel — code block and buttons
 // ---------------------------------------------------------------------------
 
-describe("CodePanel", () => {
+describe("ExampleTabPanel", () => {
   it("renders the CODE EXAMPLE label", () => {
-    render(<CodePanel code={'name = "Alex"'} slug="variables" />);
+    render(<ExampleTabPanel code={'name = "Alex"'} onTryIt={jest.fn()} />);
     expect(screen.getByText(/code example/i)).toBeInTheDocument();
   });
 
   it("renders a code block containing the code content", () => {
     const { container } = render(
-      <CodePanel code={'name = "Alex"\nprint(name)'} slug="variables" />
+      <ExampleTabPanel code={'name = "Alex"\nprint(name)'} onTryIt={jest.fn()} />
     );
     const codeEl = container.querySelector("code");
     expect(codeEl).not.toBeNull();
@@ -231,39 +231,20 @@ describe("CodePanel", () => {
   });
 
   it('Try it button has aria-label "Go to the exercise for this lesson"', () => {
-    render(<CodePanel code={'x = 1'} slug="variables" />);
+    render(<ExampleTabPanel code={'x = 1'} onTryIt={jest.fn()} />);
     expect(
-      screen.getByRole("link", { name: "Go to the exercise for this lesson" })
+      screen.getByRole("button", { name: "Go to the exercise for this lesson" })
     ).toBeInTheDocument();
   });
 
   it('Help me button has aria-label "Get a hint for this lesson"', () => {
-    render(<CodePanel code={'x = 1'} slug="variables" />);
+    render(<ExampleTabPanel code={'x = 1'} onTryIt={jest.fn()} />);
     expect(
       screen.getByRole("button", { name: "Get a hint for this lesson" })
     ).toBeInTheDocument();
   });
 });
 
-// ---------------------------------------------------------------------------
-// TryItButton
-// ---------------------------------------------------------------------------
-
-describe("TryItButton", () => {
-  it('has aria-label "Go to the exercise for this lesson"', () => {
-    render(<TryItButton slug="variables" />);
-    expect(
-      screen.getByRole("link", { name: "Go to the exercise for this lesson" })
-    ).toBeInTheDocument();
-  });
-
-  it("navigates to the correct exercise URL", () => {
-    render(<TryItButton slug="variables" />);
-    expect(
-      screen.getByRole("link", { name: "Go to the exercise for this lesson" })
-    ).toHaveAttribute("href", "/exercises/variables");
-  });
-});
 
 // ---------------------------------------------------------------------------
 // HelpMeButton

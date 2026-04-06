@@ -12,6 +12,48 @@ body {
   outline-offset: 2px;
 }
 
+/* ── Themed scrollbars ──────────────────────────────────────────────────── */
+
+/* Standard panels (lesson column, output) — track matches panel bg */
+.themed-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--code-chip-border) var(--bg-base);
+}
+
+.themed-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.themed-scroll::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+.themed-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--code-chip-border);
+  border-radius: 4px;
+}
+
+/* Code panels (editor, syntax block) — track matches code bg */
+.themed-scroll-code {
+  scrollbar-width: thin;
+  scrollbar-color: var(--code-chip-border) var(--code-bg);
+}
+
+.themed-scroll-code::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.themed-scroll-code::-webkit-scrollbar-track {
+  background: var(--code-bg);
+}
+
+.themed-scroll-code::-webkit-scrollbar-thumb {
+  background-color: var(--code-chip-border);
+  border-radius: 4px;
+}
+
 /* ── Lesson body typography ─────────────────────────────────────────────── */
 
 .lesson-body p {

@@ -19,6 +19,7 @@ export default function LessonPanel({
   return (
     <section
       aria-label="Lesson"
+      className="themed-scroll"
       style={{
         flex: 1,
         backgroundColor: "var(--bg-base)",

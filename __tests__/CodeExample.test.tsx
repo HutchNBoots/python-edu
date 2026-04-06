@@ -1,10 +1,14 @@
 import { render } from "@testing-library/react";
-import CodePanel from "@/components/CodePanel";
+import ExampleTabPanel from "@/components/ExampleTabPanel";
 
-describe("CodePanel — code block", () => {
+
+describe("ExampleTabPanel — code block", () => {
   it("renders the code content in a code element", () => {
     const { container } = render(
-      <CodePanel code={'name = "Alex"\nprint(name)'} slug="variables" />
+      <ExampleTabPanel
+        code={'name = "Alex"\nprint(name)'}
+        onTryIt={jest.fn()}
+      />
     );
     const codeEl = container.querySelector("code");
     expect(codeEl).not.toBeNull();

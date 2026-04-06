@@ -2,7 +2,7 @@ import { getLessonData, getAllLessonSlugs } from "@/lib/lessons";
 import TitleBar from "@/components/TitleBar";
 import SkillBar from "@/components/SkillBar";
 import LessonPanel from "@/components/LessonPanel";
-import CodePanel from "@/components/CodePanel";
+import RightColumn from "@/components/RightColumn";
 
 export async function generateStaticParams() {
   return getAllLessonSlugs().map((slug) => ({ slug }));
@@ -56,13 +56,7 @@ export default async function LessonPage({
         totalLessons={progressData.totalLessons}
       />
 
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          overflow: "hidden",
-        }}
-      >
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         <LessonPanel
           title={lesson.title}
           contentHtml={lesson.contentHtml}
@@ -70,7 +64,10 @@ export default async function LessonPage({
           xp={lesson.xp}
           skillProgress={progressData.skillProgress}
         />
-        <CodePanel code={lesson.codeExample} slug={slug} />
+        <RightColumn
+          code={lesson.codeExample}
+          starterCode={lesson.starterCode}
+        />
       </div>
     </div>
   );
