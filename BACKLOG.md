@@ -214,23 +214,26 @@ practise variables and conditions while making something genuinely useful.
 
 ---
 
-#### PY-008 · Learner can request a contextual hint
-
+#### PY-008 · Learner can request AI support
 **User story**
-As a learner who is stuck, I want to ask for a hint so that I get a nudge
-in the right direction without being given the answer outright.
+As a learner, I want to ask for help at any point in my learning so that I get age-appropriate support without being given the answer outright.
 
 **Acceptance criteria**
-- [ ] A "Give me a hint" button is available on every exercise and project page
-- [ ] Clicking it sends the exercise description and the learner's current code to Claude Haiku
-- [ ] The system prompt instructs Claude to: give one short hint, use casual teenage-friendly language, never reveal the answer directly, be encouraging
-- [ ] Hint is displayed within 3 seconds
-- [ ] If the API call fails, a static fallback hint is shown
-- [ ] Each hint request is stateless — no conversation history is maintained
+
+- [ ] A "Help me" button is available on every lesson page, exercise page and project page
+- [ ] On a lesson page the button sends the lesson content to Claude Haiku with the prompt "explain this concept differently in casual language for a teenager"
+- [ ] On an exercise or project page the button sends the exercise description and the learner's current code to Claude Haiku
+- [ ] The system prompt instructs Claude to: give one short response, use casual teenage-friendly language, never reveal the answer directly, be encouraging
+- [ ] Response is displayed in a slide-in panel without leaving the current page
+- [ ] Panel closes when the learner clicks away or presses Escape
+- [ ] Each request is stateless — no conversation history is maintained
+- [ ] If the API call fails a static fallback message is shown
+- [ ] Response displayed within 3 seconds
 
 **Diagrams required before build**
-- Sequence diagram: hint request → Haiku API call → hint displayed
-- Component diagram: hint panel UI
+
+- Sequence diagram: help request → Haiku API call → response displayed in panel
+- Component diagram: help panel UI showing three contexts (lesson / exercise / project)
 
 ---
 
