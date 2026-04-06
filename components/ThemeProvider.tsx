@@ -31,11 +31,11 @@ function applyTokens(name: ThemeName) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<ThemeName>("dark");
+  const [theme, setTheme] = useState<ThemeName>("light");
 
   useEffect(() => {
     const stored = localStorage.getItem("dragonpy-theme");
-    const active: ThemeName = stored === "light" ? "light" : "dark";
+    const active: ThemeName = stored === "dark" ? "dark" : "light";
     setTheme(active);
     applyTokens(active);
   }, []);

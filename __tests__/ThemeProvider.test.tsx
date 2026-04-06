@@ -31,19 +31,19 @@ beforeEach(() => {
 });
 
 describe("ThemeProvider — token application", () => {
-  it("applies dark theme tokens to document root by default", () => {
+  it("applies light theme tokens to document root by default", () => {
     renderWithTheme(() => {});
     expect(
       document.documentElement.style.getPropertyValue("--bg-base")
-    ).toBe(darkTheme["--bg-base"]);
+    ).toBe(lightTheme["--bg-base"]);
     expect(
       document.documentElement.style.getPropertyValue("--accent-primary")
-    ).toBe(darkTheme["--accent-primary"]);
+    ).toBe(lightTheme["--accent-primary"]);
   });
 
-  it("applies all dark theme tokens to the root element", () => {
+  it("applies all light theme tokens to the root element by default", () => {
     renderWithTheme(() => {});
-    Object.entries(darkTheme).forEach(([prop, value]) => {
+    Object.entries(lightTheme).forEach(([prop, value]) => {
       expect(
         document.documentElement.style.getPropertyValue(prop)
       ).toBe(value);
@@ -58,41 +58,24 @@ describe("ThemeProvider — token application", () => {
     ).toBe(lightTheme["--bg-base"]);
   });
 
-  it("defaults to dark if localStorage value is missing", () => {
+  it("defaults to light if localStorage value is missing", () => {
     renderWithTheme(() => {});
-    expect(
-      document.documentElement.style.getPropertyValue("--bg-base")
-    ).toBe(darkTheme["--bg-base"]);
-  });
-
-  it("defaults to dark if localStorage contains an unexpected value", () => {
-    localStorage.setItem("dragonpy-theme", "solarized");
-    renderWithTheme(() => {});
-    expect(
-      document.documentElement.style.getPropertyValue("--bg-base")
-    ).toBe(darkTheme["--bg-base"]);
-  });
-});
-
-describe("ThemeProvider — toggleTheme", () => {
-  it("toggleTheme switches from dark to light and persists to localStorage", () => {
-    let captured: ReturnType<typeof useTheme> | null = null;
-    renderWithTheme((v) => {
-      captured = v;
-    });
-
-    act(() => {
-      captured!.toggleTheme();
-    });
-
-    expect(localStorage.getItem("dragonpy-theme")).toBe("light");
     expect(
       document.documentElement.style.getPropertyValue("--bg-base")
     ).toBe(lightTheme["--bg-base"]);
   });
 
-  it("toggleTheme switches from light back to dark and persists to localStorage", () => {
-    localStorage.setItem("dragonpy-theme", "light");
+  it("defaults to light if localStorage contains an unexpected value", () => {
+    localStorage.setItem("dragonpy-theme", "solarized");
+    renderWithTheme(() => {});
+    expect(
+      document.documentElement.style.getPropertyValue("--bg-base")
+    ).toBe(lightTheme["--bg-base"]);
+  });
+});
+
+describe("ThemeProvider — toggleTheme", () => {
+  it("toggleTheme switches from light (default) to dark and persists to localStorage", () => {
     let captured: ReturnType<typeof useTheme> | null = null;
     renderWithTheme((v) => {
       captured = v;
@@ -106,6 +89,23 @@ describe("ThemeProvider — toggleTheme", () => {
     expect(
       document.documentElement.style.getPropertyValue("--bg-base")
     ).toBe(darkTheme["--bg-base"]);
+  });
+
+  it("toggleTheme switches from dark back to light and persists to localStorage", () => {
+    localStorage.setItem("dragonpy-theme", "dark");
+    let captured: ReturnType<typeof useTheme> | null = null;
+    renderWithTheme((v) => {
+      captured = v;
+    });
+
+    act(() => {
+      captured!.toggleTheme();
+    });
+
+    expect(localStorage.getItem("dragonpy-theme")).toBe("light");
+    expect(
+      document.documentElement.style.getPropertyValue("--bg-base")
+    ).toBe(lightTheme["--bg-base"]);
   });
 });
 
