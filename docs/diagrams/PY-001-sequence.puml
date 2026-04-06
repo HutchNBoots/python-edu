@@ -1,0 +1,34 @@
+@startuml PY-001 Sequence Diagram — Lesson Page Data Flow
+
+title PY-001: Markdown File → Rendered Lesson Page
+
+actor Learner
+participant "Browser" as Browser
+participant "Next.js\n(getStaticProps)" as GSP
+participant "/content/lessons/\n[slug].md" as MD
+
+== Page Load ==
+
+Learner -> Browser : navigates to /lessons/[slug]
+Browser -> GSP : request page props
+GSP -> MD : read file from disk
+MD --> GSP : raw markdown string
+GSP -> GSP : parse frontmatter\n(title, slug, codeExample)
+GSP -> GSP : render markdown body\nto HTML (remark/rehype)
+GSP --> Browser : { title, bodyHtml, codeExample }
+
+== Render ==
+
+Browser -> Browser : render LessonHeader (title)
+Browser -> Browser : render LessonBody (explanation HTML)
+Browser -> Browser : render CodeExample\n(syntax-highlighted)
+Browser -> Browser : render TryItButton
+
+Browser --> Learner : lesson page displayed\n(target: < 2 seconds)
+
+== Interaction ==
+
+Learner -> Browser : clicks "Try it"
+Browser --> Learner : navigates to /exercises/[slug]
+
+@enduml

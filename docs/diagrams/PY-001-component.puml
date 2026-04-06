@@ -1,0 +1,41 @@
+@startuml PY-001 Component Diagram — Lesson Page
+
+title PY-001: Lesson Page Structure
+
+package "Browser" {
+
+  package "Next.js App" {
+
+    component "[LessonPage]\n/lessons/[slug]" as LessonPage
+    component "[LessonHeader]\ntitle + meta" as LessonHeader
+    component "[LessonBody]\nexplanation text" as LessonBody
+    component "[CodeExample]\nsyntax-highlighted snippet" as CodeExample
+    component "[TryItButton]\nnavigates to exercise" as TryItButton
+
+    LessonPage --> LessonHeader
+    LessonPage --> LessonBody
+    LessonPage --> CodeExample
+    LessonPage --> TryItButton
+  }
+
+  database "/content/lessons/\n*.md files" as ContentFiles
+}
+
+package "Build / Server" {
+  component "[getStaticProps]\nreads & parses markdown" as GSP
+}
+
+ContentFiles --> GSP : markdown source
+GSP --> LessonPage : parsed lesson data (title,\nbody, code example, slug)
+
+note right of TryItButton
+  Routes to /exercises/[slug]
+  (PY-002 scope)
+end note
+
+note bottom of ContentFiles
+  Content never stored in database.
+  All lesson markdown lives here.
+end note
+
+@enduml
