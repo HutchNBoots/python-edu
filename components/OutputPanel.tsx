@@ -81,7 +81,42 @@ export default function OutputPanel({
         ) : isExplainingError ? (
           "Explaining error…"
         ) : errorFallback ? (
-          "Something went wrong — check your code for typos and try again!"
+          <>
+            {"Something went wrong — check your code for typos and try again!"}
+            {rawError && (
+              <span style={{ display: "block", marginTop: "8px" }}>
+                <button
+                  aria-expanded={showRaw}
+                  onClick={() => setShowRaw((v) => !v)}
+                  style={{
+                    background: "none",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "4px",
+                    color: "var(--text-muted)",
+                    fontSize: "11px",
+                    cursor: "pointer",
+                    padding: "2px 8px",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {showRaw ? "Hide technical detail" : "Show technical detail"}
+                </button>
+                {showRaw && (
+                  <span
+                    style={{
+                      display: "block",
+                      marginTop: "6px",
+                      color: "var(--text-muted)",
+                      fontFamily: "monospace",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {rawError}
+                  </span>
+                )}
+              </span>
+            )}
+          </>
         ) : friendlyError ? (
           <>
             <span aria-hidden="true">⚠️ </span>
