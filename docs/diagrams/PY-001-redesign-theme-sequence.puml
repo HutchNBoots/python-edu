@@ -1,48 +1,48 @@
-@startuml PY-001 Redesign — Theme System Sequence
+  @startuml PY-001 Redesign — Theme System Sequence
 
-title dragon.py Theme System — Initialisation & Token Application
+  title dragon.py Theme System — Initialisation & Token Application
 
-actor Learner
-participant "Browser" as Browser
-participant "ThemeProvider\n(React component)" as TP
-participant "localStorage\n(dragonpy-theme)" as LS
-participant "/styles/themes/\ndragon.ts | light.ts" as Tokens
-participant "document.documentElement\n(:root)" as Root
-participant "LessonPage\ncomponents" as Page
+  actor Learner
+  participant "Browser" as Browser
+  participant "ThemeProvider\n(React component)" as TP
+  participant "localStorage\n(dragonpy-theme)" as LS
+  participant "/styles/themes/\ndragon.ts | light.ts" as Tokens
+  participant "document.documentElement\n(:root)" as Root
+  participant "LessonPage\ncomponents" as Page
 
-== App boot ==
+  == App boot ==
 
-Learner -> Browser : opens any page
-Browser -> TP : mount ThemeProvider
-TP -> LS : read 'dragonpy-theme'
-alt key exists
-  LS --> TP : 'dark' | 'light'
-else no key stored
-  TP -> TP : default to 'dark'
-end
+  Learner -> Browser : opens any page
+  Browser -> TP : mount ThemeProvider
+  TP -> LS : read 'dragonpy-theme'
+  alt key exists
+    LS --> TP : 'dark' | 'light'
+  else no key stored
+    TP -> TP : default to 'dark'
+  end
 
-TP -> Tokens : import theme object\n(dragon.ts or light.ts)
-Tokens --> TP : { '--bg-base': '#0f1117', ... }
+  TP -> Tokens : import theme object\n(dragon.ts or light.ts)
+  Tokens --> TP : { '--bg-base': '#0f1117', ... }
 
-TP -> Root : setProperty() each token\ne.g. --bg-base, --accent-primary, etc.
-Root --> Page : CSS custom properties\navailable to all components
+  TP -> Root : setProperty() each token\ne.g. --bg-base, --accent-primary, etc.
+  Root --> Page : CSS custom properties\navailable to all components
 
-== Render ==
+  == Render ==
 
-Page -> Page : render TitleBar, SkillBar,\nLessonPanel, CodePanel
-Page -> Page : every colour references\nvar(--token-name) only —\nno hardcoded hex in components
+  Page -> Page : render TitleBar, SkillBar,\nLessonPanel, CodePanel
+  Page -> Page : every colour references\nvar(--token-name) only —\nno hardcoded hex in components
 
-Browser --> Learner : styled lesson page displayed
+  Browser --> Learner : styled lesson page displayed
 
-== Future theme toggle (no UI required now) ==
+  == Future theme toggle (no UI required now) ==
 
-note over TP, LS
-  When a toggle is added later:
-  1. user clicks toggle
-  2. ThemeProvider swaps token set
-  3. writes new name to localStorage
-  4. re-applies all tokens to :root
-  No component refactoring needed.
-end note
+  note over TP, LS
+    When a toggle is added later:
+    1. user clicks toggle
+    2. ThemeProvider swaps token set
+    3. writes new name to localStorage
+    4. re-applies all tokens to :root
+    No component refactoring needed.
+  end note
 
-@enduml
+  @enduml
