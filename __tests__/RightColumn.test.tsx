@@ -164,7 +164,7 @@ describe("TryItTabPanel", () => {
   });
 
   it("Run button calls runCode with current editor content", async () => {
-    mockRunCode.mockResolvedValue({ output: "Alex", error: null });
+    mockRunCode.mockResolvedValue({ output: "Alex", rawError: null });
     render(<TryItTabPanel starterCode={STARTER_CODE} />);
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /run your python code/i }));
@@ -173,7 +173,7 @@ describe("TryItTabPanel", () => {
   });
 
   it("displays output in the output panel after Run", async () => {
-    mockRunCode.mockResolvedValue({ output: "Hello, Alex!", error: null });
+    mockRunCode.mockResolvedValue({ output: "Hello, Alex!", rawError: null });
     render(<TryItTabPanel starterCode={STARTER_CODE} />);
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /run your python code/i }));
@@ -183,18 +183,21 @@ describe("TryItTabPanel", () => {
     );
   });
 
-  it("displays a plain-English error message when runCode returns an error", async () => {
+  it("displays a friendly error message when runCode returns an error", async () => {
     mockRunCode.mockResolvedValue({
       output: "",
-      error: "Oops! 'x' hasn't been created yet — define it before you use it.",
+      rawError: "NameError: name 'x' is not defined",
     });
+    global.fetch = jest.fn().mockResolvedValue({
+      json: async () => ({ explanation: "Looks like 'x' hasn't been defined yet!" }),
+    }) as jest.Mock;
     render(<TryItTabPanel starterCode={STARTER_CODE} />);
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /run your python code/i }));
     });
     await waitFor(() =>
       expect(screen.getByLabelText(/code output/i)).toHaveTextContent(
-        "Oops! 'x' hasn't been created yet"
+        "Looks like 'x' hasn't been defined yet!"
       )
     );
   });
@@ -209,7 +212,7 @@ describe("TryItTabPanel", () => {
   });
 
   it("Reset clears the output panel", async () => {
-    mockRunCode.mockResolvedValue({ output: "Hello!", error: null });
+    mockRunCode.mockResolvedValue({ output: "Hello!", rawError: null });
     render(<TryItTabPanel starterCode={STARTER_CODE} />);
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /run your python code/i }));
@@ -228,34 +231,42 @@ describe("TryItTabPanel", () => {
 // OutputPanel
 // ---------------------------------------------------------------------------
 
+const emptyPanelProps = {
+  output: "",
+  friendlyError: null,
+  rawError: null,
+  isRunning: false,
+  isExplainingError: false,
+  errorFallback: false,
+};
+
 describe("OutputPanel", () => {
   it("shows placeholder text when empty", () => {
-    render(<OutputPanel output="" error={null} isRunning={false} />);
+    render(<OutputPanel {...emptyPanelProps} />);
     expect(screen.getByLabelText(/code output/i)).toHaveTextContent(
       "Output will appear here"
     );
   });
 
   it("displays output text", () => {
-    render(<OutputPanel output="Hello!" error={null} isRunning={false} />);
+    render(<OutputPanel {...emptyPanelProps} output="Hello!" />);
     expect(screen.getByLabelText(/code output/i)).toHaveTextContent("Hello!");
   });
 
-  it("displays error message", () => {
+  it("displays friendly error message", () => {
     render(
       <OutputPanel
-        output=""
-        error="There's a typo somewhere"
-        isRunning={false}
+        {...emptyPanelProps}
+        friendlyError="Looks like a typo!"
       />
     );
     expect(screen.getByLabelText(/code output/i)).toHaveTextContent(
-      "There's a typo somewhere"
+      "Looks like a typo!"
     );
   });
 
   it("shows running state", () => {
-    render(<OutputPanel output="" error={null} isRunning={true} />);
+    render(<OutputPanel {...emptyPanelProps} isRunning={true} />);
     expect(screen.getByLabelText(/code output/i)).toHaveTextContent("Running");
   });
 });
@@ -299,7 +310,7 @@ describe("Scrollbar CSS classes", () => {
 
   it("OutputPanel pre has themed-scroll class", () => {
     const { container } = render(
-      <OutputPanel output="" error={null} isRunning={false} />
+      <OutputPanel {...emptyPanelProps} />
     );
     expect(container.querySelector("pre")).toHaveClass("themed-scroll");
   });

@@ -5,6 +5,7 @@ import CodeEditor from "@/components/CodeEditor";
 import OutputPanel from "@/components/OutputPanel";
 import HelpMeButton from "@/components/HelpMeButton";
 import { runCode } from "@/lib/pyodide";
+import { stripPaths } from "@/lib/stripPaths";
 
 interface TryItTabPanelProps {
   starterCode: string;
@@ -13,30 +14,67 @@ interface TryItTabPanelProps {
 export default function TryItTabPanel({ starterCode }: TryItTabPanelProps) {
   const [code, setCode] = useState(starterCode);
   const [output, setOutput] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [friendlyError, setFriendlyError] = useState<string | null>(null);
+  const [rawError, setRawError] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [isExplainingError, setIsExplainingError] = useState(false);
+  const [errorFallback, setErrorFallback] = useState(false);
 
   // Keep editor in sync if starterCode changes (e.g. different lesson)
   useEffect(() => {
     setCode(starterCode);
     setOutput("");
-    setError(null);
+    setFriendlyError(null);
+    setRawError(null);
+    setIsExplainingError(false);
+    setErrorFallback(false);
   }, [starterCode]);
 
   async function handleRun() {
     setIsRunning(true);
     setOutput("");
-    setError(null);
+    setFriendlyError(null);
+    setRawError(null);
+    setIsExplainingError(false);
+    setErrorFallback(false);
+
     const result = await runCode(code);
-    setOutput(result.output);
-    setError(result.error);
     setIsRunning(false);
+
+    if (result.rawError) {
+      const stripped = stripPaths(result.rawError);
+      setRawError(stripped);
+      setIsExplainingError(true);
+
+      try {
+        const res = await fetch("/api/explain-error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, rawError: stripped }),
+        });
+        const data = await res.json();
+        if (data.explanation) {
+          setFriendlyError(data.explanation);
+        } else {
+          setErrorFallback(true);
+        }
+      } catch {
+        setErrorFallback(true);
+      } finally {
+        setIsExplainingError(false);
+      }
+    } else {
+      setOutput(result.output);
+    }
   }
 
   function handleReset() {
     setCode(starterCode);
     setOutput("");
-    setError(null);
+    setFriendlyError(null);
+    setRawError(null);
+    setIsExplainingError(false);
+    setErrorFallback(false);
   }
 
   return (
@@ -56,7 +94,14 @@ export default function TryItTabPanel({ starterCode }: TryItTabPanelProps) {
       <CodeEditor value={code} onChange={setCode} />
 
       {/* Output */}
-      <OutputPanel output={output} error={error} isRunning={isRunning} />
+      <OutputPanel
+        output={output}
+        friendlyError={friendlyError}
+        rawError={rawError}
+        isRunning={isRunning}
+        isExplainingError={isExplainingError}
+        errorFallback={errorFallback}
+      />
 
       {/* Button row */}
       <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>

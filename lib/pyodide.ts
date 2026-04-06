@@ -1,6 +1,6 @@
 export interface RunResult {
   output: string;
-  error: string | null;
+  rawError: string | null;
 }
 
 interface PyodideInterface {
@@ -88,9 +88,9 @@ sys.stderr = io.StringIO()
   try {
     await pyodide.runPythonAsync(code);
     const output = pyodide.runPython("sys.stdout.getvalue()") as string;
-    return { output: output.trim() || "(no output)", error: null };
+    return { output: output.trim() || "(no output)", rawError: null };
   } catch (err: unknown) {
     const raw = err instanceof Error ? err.message : String(err);
-    return { output: "", error: simplifyError(raw) };
+    return { output: "", rawError: raw };
   }
 }

@@ -1,11 +1,33 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
 interface OutputPanelProps {
   output: string;
-  error: string | null;
+  friendlyError: string | null;
+  rawError: string | null;
   isRunning: boolean;
+  isExplainingError: boolean;
+  errorFallback: boolean;
 }
 
-export default function OutputPanel({ output, error, isRunning }: OutputPanelProps) {
-  const isEmpty = !output && !error && !isRunning;
+export default function OutputPanel({
+  output,
+  friendlyError,
+  rawError,
+  isRunning,
+  isExplainingError,
+  errorFallback,
+}: OutputPanelProps) {
+  const [showRaw, setShowRaw] = useState(false);
+
+  // Collapse raw traceback whenever a new error comes in
+  useEffect(() => {
+    setShowRaw(false);
+  }, [rawError]);
+
+  const hasError = isExplainingError || friendlyError || errorFallback;
+  const isEmpty = !output && !hasError && !isRunning;
 
   return (
     <div
@@ -15,7 +37,9 @@ export default function OutputPanel({ output, error, isRunning }: OutputPanelPro
         borderRadius: "8px",
         padding: "12px 14px",
         minHeight: "72px",
-        maxHeight: "140px",
+        maxHeight: "200px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <p
@@ -26,10 +50,12 @@ export default function OutputPanel({ output, error, isRunning }: OutputPanelPro
           textTransform: "uppercase",
           color: "var(--text-muted)",
           margin: "0 0 8px",
+          flexShrink: 0,
         }}
       >
         Output
       </p>
+
       <pre
         aria-label="Code output"
         aria-live="polite"
@@ -40,8 +66,8 @@ export default function OutputPanel({ output, error, isRunning }: OutputPanelPro
           fontSize: "12px",
           lineHeight: "1.7",
           overflowY: "auto",
-          maxHeight: "80px",
-          color: error
+          flex: 1,
+          color: hasError
             ? "var(--accent-orange)"
             : isEmpty || isRunning
             ? "var(--text-muted)"
@@ -50,13 +76,60 @@ export default function OutputPanel({ output, error, isRunning }: OutputPanelPro
           wordBreak: "break-word",
         }}
       >
-        {isRunning
-          ? "Running…"
-          : error
-          ? error
-          : isEmpty
-          ? "Output will appear here"
-          : output}
+        {isRunning ? (
+          "Running…"
+        ) : isExplainingError ? (
+          "Explaining error…"
+        ) : errorFallback ? (
+          "Something went wrong — check your code for typos and try again!"
+        ) : friendlyError ? (
+          <>
+            <span aria-hidden="true">⚠️ </span>
+            {friendlyError}
+            {rawError && (
+              <span
+                style={{
+                  display: "block",
+                  marginTop: "8px",
+                }}
+              >
+                <button
+                  aria-expanded={showRaw}
+                  onClick={() => setShowRaw((v) => !v)}
+                  style={{
+                    background: "none",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "4px",
+                    color: "var(--text-muted)",
+                    fontSize: "11px",
+                    cursor: "pointer",
+                    padding: "2px 8px",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {showRaw ? "Hide technical detail" : "Show technical detail"}
+                </button>
+                {showRaw && (
+                  <span
+                    style={{
+                      display: "block",
+                      marginTop: "6px",
+                      color: "var(--text-muted)",
+                      fontFamily: "monospace",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {rawError}
+                  </span>
+                )}
+              </span>
+            )}
+          </>
+        ) : isEmpty ? (
+          "Output will appear here"
+        ) : (
+          output
+        )}
       </pre>
     </div>
   );
