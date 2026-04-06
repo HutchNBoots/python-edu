@@ -116,7 +116,7 @@ describe("Light and dark theme token parity", () => {
     expect(darkKeys).toEqual(lightKeys);
   });
 
-  it("code block tokens are identical in both themes", () => {
+  it("both themes define all code block tokens", () => {
     const codeTokens = [
       "--code-bg",
       "--code-comment",
@@ -124,9 +124,13 @@ describe("Light and dark theme token parity", () => {
       "--code-string",
       "--code-variable",
       "--code-value",
+      "--code-chip-bg",
+      "--code-chip-color",
+      "--code-chip-border",
     ];
     codeTokens.forEach((token) => {
-      expect(darkTheme[token]).toBe(lightTheme[token]);
+      expect(darkTheme[token]).toBeTruthy();
+      expect(lightTheme[token]).toBeTruthy();
     });
   });
 });

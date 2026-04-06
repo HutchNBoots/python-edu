@@ -24,4 +24,8 @@ export const darkTheme: Record<string, string> = {
   "--code-string": "#34d399",
   "--code-variable": "#60a5fa",
   "--code-value": "#fb923c",
+  // Inline code chip tokens
+  "--code-chip-bg": "#1e1e2e",
+  "--code-chip-color": "#a78bfa",
+  "--code-chip-border": "#2a2f3d",
 };

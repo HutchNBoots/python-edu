@@ -1,7 +1,8 @@
 "use client";
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { codeTheme } from "@/styles/codeTheme";
+import { darkCodeTheme, lightCodeTheme } from "@/styles/codeTheme";
+import { useTheme } from "@/components/ThemeProvider";
 import TryItButton from "@/components/TryItButton";
 import HelpMeButton from "@/components/HelpMeButton";
 
@@ -11,6 +12,9 @@ interface CodePanelProps {
 }
 
 export default function CodePanel({ code, slug }: CodePanelProps) {
+  const { theme } = useTheme();
+  const codeTheme = theme === "dark" ? darkCodeTheme : lightCodeTheme;
+
   return (
     <section
       aria-label="Code example"

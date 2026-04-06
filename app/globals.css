@@ -31,11 +31,11 @@ body {
 .lesson-body code {
   font-family: monospace;
   font-size: 12px;
-  background-color: var(--code-bg);
-  border: 1px solid var(--border-subtle);
+  background-color: var(--code-chip-bg);
+  border: 1px solid var(--code-chip-border);
   border-radius: 4px;
   padding: 1px 5px;
-  color: var(--accent-primary-text);
+  color: var(--code-chip-color);
 }
 
 /* ── Tables ─────────────────────────────────────────────────────────────── */

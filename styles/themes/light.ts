@@ -18,11 +18,15 @@ export const lightTheme: Record<string, string> = {
   "--accent-orange": "#c2410c",
   "--accent-orange-subtle": "#fff7ed",
   "--accent-orange-border": "#fed7aa",
-  // Code block tokens are identical in both themes — editor is always dark
-  "--code-bg": "#1e1e2e",
-  "--code-comment": "#6c7086",
-  "--code-keyword": "#c084fc",
-  "--code-string": "#34d399",
-  "--code-variable": "#60a5fa",
-  "--code-value": "#fb923c",
+  // Code block tokens — light mode uses a soft purple tint
+  "--code-bg": "#f0eefb",
+  "--code-comment": "#9e97c0",
+  "--code-keyword": "#7c3aed",
+  "--code-string": "#16a34a",
+  "--code-variable": "#2563eb",
+  "--code-value": "#c2410c",
+  // Inline code chip tokens
+  "--code-chip-bg": "#edeaf8",
+  "--code-chip-color": "#5b4bd4",
+  "--code-chip-border": "#d4cef5",
 };
