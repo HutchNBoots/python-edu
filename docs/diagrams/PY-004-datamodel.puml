@@ -1,0 +1,58 @@
+@startuml PY-004-datamodel
+title PY-004 · Skill Tree — Data Model
+
+skinparam backgroundColor #1e1e2e
+skinparam class {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+  HeaderBackgroundColor #313244
+}
+skinparam ArrowColor #89b4fa
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+entity Skill {
+  * id : string
+  --
+  * name : string
+  * category : "core" | "additional"
+  description : string
+  prerequisites : string[]
+}
+
+entity Path {
+  * id : string
+  --
+  * skillId : string <<FK>>
+  * level : "easy" | "mid" | "hard"
+  * xpReward : number
+  contentFile : string
+}
+
+entity PathCompletion {
+  * learnerId : string <<FK>>
+  * pathId : string <<FK>>
+  --
+  completedAt : timestamp
+  xpAwarded : number
+}
+
+note right of PathCompletion
+  MVP: stored in localStorage
+  keyed by learnerId + pathId
+  Supabase added in PY-013
+end note
+
+note right of Path
+  level ordering:
+  easy → mid → hard
+  Each level unlocks only
+  after the previous is complete
+end note
+
+Skill "1" --o{ "1..3" Path : has
+Path "1" --o{ "0..1" PathCompletion : completed by
+
+@enduml

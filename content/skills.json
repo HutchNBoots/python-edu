@@ -1,0 +1,97 @@
+{
+  "skills": [
+    {
+      "id": "variables",
+      "name": "Variables & data types",
+      "category": "core",
+      "prerequisites": [],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "loops",
+      "name": "Loops",
+      "category": "core",
+      "prerequisites": [{ "skillId": "variables", "minLevel": "easy" }],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "conditions",
+      "name": "Conditions",
+      "category": "core",
+      "prerequisites": [{ "skillId": "variables", "minLevel": "easy" }],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "lists",
+      "name": "Lists",
+      "category": "additional",
+      "prerequisites": [
+        { "skillId": "variables",  "minLevel": "mid" },
+        { "skillId": "loops",      "minLevel": "mid" },
+        { "skillId": "conditions", "minLevel": "mid" }
+      ],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "files",
+      "name": "Files",
+      "category": "additional",
+      "prerequisites": [
+        { "skillId": "variables",  "minLevel": "mid" },
+        { "skillId": "loops",      "minLevel": "mid" },
+        { "skillId": "conditions", "minLevel": "mid" }
+      ],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "functions",
+      "name": "Functions",
+      "category": "additional",
+      "prerequisites": [
+        { "skillId": "variables",  "minLevel": "mid" },
+        { "skillId": "loops",      "minLevel": "mid" },
+        { "skillId": "conditions", "minLevel": "mid" },
+        { "skillId": "lists",      "minLevel": "easy" },
+        { "skillId": "files",      "minLevel": "easy" }
+      ],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    },
+    {
+      "id": "dictionaries",
+      "name": "Dictionaries",
+      "category": "additional",
+      "prerequisites": [
+        { "skillId": "functions", "minLevel": "easy" }
+      ],
+      "paths": [
+        { "level": "easy", "xpReward": 50 },
+        { "level": "mid",  "xpReward": 100 },
+        { "level": "hard", "xpReward": 150 }
+      ]
+    }
+  ]
+}

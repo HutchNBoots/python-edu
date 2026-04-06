@@ -1,0 +1,59 @@
+@startuml PY-004-component
+title PY-004 · Skill Tree Page — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1e1e2e
+skinparam component {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam ArrowColor #89b4fa
+
+package "app/skill-tree/page.tsx" {
+  component [SkillTreePage] as Page
+}
+
+package "components/" {
+  component [SkillTreeHeader] as Header
+  note right of Header : Total XP earned\nSkills completed count
+
+  component [SkillSection] as Section
+  note right of Section : Groups skills by category\n(Core / Additional)
+
+  component [SkillCard] as Card
+  note right of Card : One card per skill\nLocked / available / complete\nNavigates to first incomplete path on click
+
+  component [PathRow] as PathRow
+  note right of PathRow : Three path badges per skill\neasy · mid · hard
+
+  component [PathBadge] as Badge
+  note right of Badge : Visual state:\n  locked (grey)\n  available (blue)\n  complete (green)\nShows XP earned if complete
+}
+
+package "lib/" {
+  component [useSkillProgress] as Hook
+  note right of Hook : Custom hook\nReads completion state\nfrom Supabase (PY-013)\nor localStorage (MVP)
+}
+
+package "content/skills/" {
+  component [skills.json] as Content
+  note right of Content : Static skill definitions\nname, description,\nxpReward per path,\nprerequisites
+}
+
+Page --> Header
+Page --> Section
+Section --> Card
+Card --> PathRow
+PathRow --> Badge
+
+Page ..> Hook : uses
+Hook ..> Content : reads skill definitions
+Hook ..> "[Supabase / localStorage]" : reads completion state
+
+@enduml

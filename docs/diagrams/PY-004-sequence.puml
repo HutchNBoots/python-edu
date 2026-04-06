@@ -1,0 +1,86 @@
+@startuml PY-004-sequence
+title PY-004 · Skill Tree Page — Render Sequence
+
+skinparam backgroundColor #1e1e2e
+skinparam sequence {
+  ArrowColor #89b4fa
+  ActorBorderColor #89b4fa
+  ActorBackgroundColor #2a2a3d
+  ActorFontColor #cdd6f4
+  ParticipantBorderColor #555577
+  ParticipantBackgroundColor #2a2a3d
+  ParticipantFontColor #cdd6f4
+  LifeLineBorderColor #555577
+  BoxBackgroundColor #313244
+  BoxBorderColor #555577
+}
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+actor Learner
+participant "SkillTreePage" as Page
+participant "useSkillProgress\n(hook)" as Hook
+participant "skills.json\n(static content)" as Content
+participant "localStorage" as Storage
+participant "SkillSection\n+ SkillCard" as Cards
+participant "PathBadge" as Badge
+
+Learner -> Page : navigates to /skill-tree
+
+activate Page
+
+Page -> Hook : initialise()
+activate Hook
+
+Hook -> Content : import skills.json
+Content --> Hook : skill definitions\n(id, name, paths, xpReward)
+
+Hook -> Storage : getItem("skill-progress")
+Storage --> Hook : completion JSON\n(or null if first visit)
+
+note over Hook
+  Merges static skill definitions
+  with stored completion state.
+  Derives per-path status:
+    locked / available / complete
+end note
+
+Hook --> Page : { skills[], totalXP, completedCount }
+deactivate Hook
+
+Page -> Cards : render(skills[])
+activate Cards
+
+loop for each Skill
+  Cards -> Badge : render(path.level, path.status, path.xpEarned)
+  activate Badge
+  Badge --> Cards : styled badge\n(grey=locked, blue=available, green=complete)
+  deactivate Badge
+end
+
+Cards --> Page : skill tree UI
+deactivate Cards
+
+Page --> Learner : skill tree displayed\n(header: total XP + skills complete)
+
+deactivate Page
+
+== Learner clicks a SkillCard ==
+
+Learner -> Cards : click SkillCard
+activate Cards
+
+note over Cards
+  Finds first path where
+  status != "complete".
+  Falls back to hard path
+  if all complete.
+end note
+
+Cards -> Page : router.push(/lessons/<skillId>/<firstIncompletePath>)
+deactivate Cards
+
+Page --> Learner : navigates to lesson
+
+@enduml
