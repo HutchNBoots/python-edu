@@ -25,7 +25,6 @@ export default function TabBar({ active, onChange }: TabBarProps) {
       style={{
         display: "flex",
         borderBottom: "1px solid var(--border-subtle)",
-        backgroundColor: "var(--bg-surface)",
         flexShrink: 0,
       }}
     >
@@ -40,8 +39,11 @@ export default function TabBar({ active, onChange }: TabBarProps) {
             id={`tab-${tab.id}`}
             onClick={() => onChange(tab.id)}
             style={{
+              flex: 1,
               padding: "10px 18px 8px",
-              background: "transparent",
+              backgroundColor: isActive
+                ? "var(--accent-primary-subtle)"
+                : "var(--bg-surface)",
               border: "none",
               borderBottom: isActive
                 ? "2px solid var(--accent-primary)"
@@ -56,7 +58,7 @@ export default function TabBar({ active, onChange }: TabBarProps) {
                 display: "block",
                 fontSize: "13px",
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? "var(--accent-primary)" : "var(--text-secondary)",
+                color: isActive ? "var(--accent-primary)" : "var(--text-muted)",
               }}
             >
               {tab.label}
