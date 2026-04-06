@@ -2,15 +2,17 @@ import { render, screen } from "@testing-library/react";
 import TryItButton from "@/components/TryItButton";
 
 describe("TryItButton", () => {
-  it("renders a visible Try it button", () => {
+  it('renders with aria-label "Go to the exercise for this lesson"', () => {
     render(<TryItButton slug="variables" />);
-    const button = screen.getByRole("link", { name: /try it/i });
-    expect(button).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Go to the exercise for this lesson" })
+    ).toBeInTheDocument();
   });
 
   it("navigates to the correct exercise URL", () => {
     render(<TryItButton slug="variables" />);
-    const link = screen.getByRole("link", { name: /try it/i });
-    expect(link).toHaveAttribute("href", "/exercises/variables");
+    expect(
+      screen.getByRole("link", { name: "Go to the exercise for this lesson" })
+    ).toHaveAttribute("href", "/exercises/variables");
   });
 });

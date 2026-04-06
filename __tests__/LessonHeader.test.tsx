@@ -1,9 +1,17 @@
 import { render, screen } from "@testing-library/react";
-import LessonHeader from "@/components/LessonHeader";
+import LessonPanel from "@/components/LessonPanel";
 
-describe("LessonHeader", () => {
-  it("renders the lesson title", () => {
-    render(<LessonHeader title="Variables & Data Types" />);
+describe("LessonPanel — heading", () => {
+  it("renders the lesson title as an h1", () => {
+    render(
+      <LessonPanel
+        title="Variables & Data Types"
+        contentHtml=""
+        keyConcept="A variable stores a value."
+        xp={50}
+        skillProgress={33}
+      />
+    );
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Variables & Data Types"
     );

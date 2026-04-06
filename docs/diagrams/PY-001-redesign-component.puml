@@ -1,0 +1,70 @@
+@startuml PY-001 Redesign — Component Diagram
+
+title dragon.py Lesson Page — Component Structure
+
+skinparam componentStyle rectangle
+
+package "ThemeProvider (app root)" {
+
+  package "TitleBar [Row 1 · 52px · bg-surface]" {
+    component "[BrandMark]\ndragon🐉.py" as Brand
+    component "[SkillProgressBar]\nflex-1, max-width 220px" as SkillBar
+    component "[SkillLabel]\nSkill N of 3" as SkillLabel
+    component "[StreakPill]\n🔥 day count\norange tones" as Streak
+    component "[XPPill]\ntotal XP\nprimary tones" as XP
+  }
+
+  package "SkillBar [Row 2 · 40px · bg-surface]" {
+    component "[PathLabel]\nmuted 'Path'" as PathLabel
+    component "[PathPill: Easy]\ncompleted=green\nactive=primary\nlocked=muted" as EasyPill
+    component "[PathPill: Mid]" as MidPill
+    component "[PathPill: Hard]" as HardPill
+    component "[LessonPosition]\nVariables · Lesson 1 of 3" as LessonPos
+  }
+
+  package "ContentArea [Row 3 · remaining height · two columns]" {
+
+    package "LessonPanel [left col · bg-base · overflow-y auto]" {
+      component "[LessonHeading]\n17px medium, text-primary" as Heading
+      component "[LessonBody]\n13px, text-secondary, lh 1.75" as Body
+      component "[KeyConceptBox]\nprimary-subtle bg\nprimary-border border" as KeyConcept
+      component "[XPRewardNotice]\n+XP badge, accent-primary" as XPReward
+      component "[SkillProgressBarGreen]\nbottom of panel" as GreenBar
+    }
+
+    package "CodePanel [right col · bg-base · flex column]" {
+      component "[CodeLabel]\nuppercase, text-muted" as CodeLabel
+      component "[SyntaxBlock]\ncode-bg, flex-1\ntoken colour mapping" as SyntaxBlock
+      package "ButtonRow [pinned bottom]" {
+        component "[TryItButton]\nprimary, flex-1, →\naria-label: Go to the exercise..." as TryIt
+        component "[HelpMeButton]\nsecondary, fixed width\naria-label: Get a hint..." as HelpMe
+      }
+    }
+  }
+}
+
+package "Token System" {
+  file "/styles/themes/dragon.ts\n(dark theme tokens)" as DarkTheme
+  file "/styles/themes/light.ts\n(light theme tokens)" as LightTheme
+  component "[ThemeProvider]\napplies tokens to :root\nreads/writes localStorage\nkey: dragonpy-theme" as ThemeProvider
+}
+
+DarkTheme --> ThemeProvider : default (dark)
+LightTheme --> ThemeProvider : alternate
+ThemeProvider --> Brand : CSS custom properties on :root
+
+note right of SyntaxBlock
+  Token mapping:
+  comments    → --code-comment
+  keywords    → --code-keyword
+  strings     → --code-string
+  variables   → --code-variable
+  numbers     → --code-value
+end note
+
+note bottom of KeyConceptBox
+  No raw hex values in any component.
+  All colours via CSS custom properties.
+end note
+
+@enduml

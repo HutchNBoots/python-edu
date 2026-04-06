@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 interface TryItButtonProps {
@@ -5,12 +8,33 @@ interface TryItButtonProps {
 }
 
 export default function TryItButton({ slug }: TryItButtonProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <Link
       href={`/exercises/${slug}`}
-      className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition-colors"
+      aria-label="Go to the exercise for this lesson"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "6px",
+        backgroundColor: hovered
+          ? "var(--accent-primary-hover)"
+          : "var(--accent-primary)",
+        color: "#ffffff",
+        borderRadius: "8px",
+        padding: "11px 16px",
+        fontSize: "13px",
+        fontWeight: 500,
+        textDecoration: "none",
+        transition: "background-color 0.15s ease",
+      }}
     >
-      Try it →
+      Try it yourself <span aria-hidden="true">→</span>
     </Link>
   );
 }

@@ -1,9 +1,19 @@
 import { render, screen } from "@testing-library/react";
-import LessonBody from "@/components/LessonBody";
+import LessonPanel from "@/components/LessonPanel";
 
-describe("LessonBody", () => {
+describe("LessonPanel — body content", () => {
   it("renders explanation HTML content", () => {
-    render(<LessonBody contentHtml="<p>Think of a variable like a box.</p>" />);
-    expect(screen.getByText("Think of a variable like a box.")).toBeInTheDocument();
+    render(
+      <LessonPanel
+        title="Variables"
+        contentHtml="<p>Think of a variable like a box.</p>"
+        keyConcept="A variable stores a value."
+        xp={50}
+        skillProgress={33}
+      />
+    );
+    expect(
+      screen.getByText("Think of a variable like a box.")
+    ).toBeInTheDocument();
   });
 });

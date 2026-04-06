@@ -1,12 +1,11 @@
 import { getLessonData, getAllLessonSlugs } from "@/lib/lessons";
-import LessonHeader from "@/components/LessonHeader";
-import LessonBody from "@/components/LessonBody";
-import CodeExample from "@/components/CodeExample";
-import TryItButton from "@/components/TryItButton";
+import TitleBar from "@/components/TitleBar";
+import SkillBar from "@/components/SkillBar";
+import LessonPanel from "@/components/LessonPanel";
+import CodePanel from "@/components/CodePanel";
 
 export async function generateStaticParams() {
-  const slugs = getAllLessonSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return getAllLessonSlugs().map((slug) => ({ slug }));
 }
 
 export default async function LessonPage({
@@ -17,12 +16,62 @@ export default async function LessonPage({
   const { slug } = await params;
   const lesson = await getLessonData(slug);
 
+  // TODO: replace with live data from Supabase (PY-013)
+  const progressData = {
+    skillProgress: 33,
+    skillNumber: 1,
+    totalSkills: 3,
+    streak: 4,
+    totalXp: 120,
+    paths: [
+      { name: "Easy", state: "active" as const },
+      { name: "Mid", state: "locked" as const },
+      { name: "Hard", state: "locked" as const },
+    ],
+    lessonNumber: 1,
+    totalLessons: 3,
+  };
+
   return (
-    <main className="max-w-2xl mx-auto px-4 py-10 min-w-[320px]">
-      <LessonHeader title={lesson.title} />
-      <LessonBody contentHtml={lesson.contentHtml} />
-      <CodeExample code={lesson.codeExample} />
-      <TryItButton slug={slug} />
-    </main>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <TitleBar
+        skillProgress={progressData.skillProgress}
+        skillNumber={progressData.skillNumber}
+        totalSkills={progressData.totalSkills}
+        streak={progressData.streak}
+        totalXp={progressData.totalXp}
+      />
+
+      <SkillBar
+        paths={progressData.paths}
+        skillName={lesson.title.split("&")[0].trim()}
+        lessonNumber={progressData.lessonNumber}
+        totalLessons={progressData.totalLessons}
+      />
+
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          overflow: "hidden",
+        }}
+      >
+        <LessonPanel
+          title={lesson.title}
+          contentHtml={lesson.contentHtml}
+          keyConcept={lesson.keyConcept}
+          xp={lesson.xp}
+          skillProgress={progressData.skillProgress}
+        />
+        <CodePanel code={lesson.codeExample} slug={slug} />
+      </div>
+    </div>
   );
 }

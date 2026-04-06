@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
-import CodeExample from "@/components/CodeExample";
+import { render } from "@testing-library/react";
+import CodePanel from "@/components/CodePanel";
 
-describe("CodeExample", () => {
-  it("renders the code content", () => {
-    const { container } = render(<CodeExample code={'name = "Alex"\nprint(name)'} />);
-    // Syntax highlighter splits code into spans — check the full pre/code text instead
+describe("CodePanel — code block", () => {
+  it("renders the code content in a code element", () => {
+    const { container } = render(
+      <CodePanel code={'name = "Alex"\nprint(name)'} slug="variables" />
+    );
     const codeEl = container.querySelector("code");
     expect(codeEl).not.toBeNull();
     expect(codeEl!.textContent).toContain("name");

@@ -1,5 +1,7 @@
 ---
 title: "Variables & Data Types"
+xp: 50
+keyConcept: "A variable is a named container that stores a value. You can update it, read it, and pass it around your program. Python figures out the type automatically — you just give it a name and a value."
 codeExample: |
   # Variables store information you want to use later
   name = "Alex"
@@ -7,8 +9,10 @@ codeExample: |
   height = 1.65
   is_cool = True
 
-  print(name)   # Alex
-  print(age)    # 14
+  # Print them out
+  print(name)    # Alex
+  print(age)     # 14
+  print(height)  # 1.65
 ---
 
 ## What even is a variable?
@@ -19,7 +23,7 @@ Think of a variable like a labelled box. You put something inside it, give the b
 name = "Alex"
 ```
 
-That line creates a box called `name` and puts the text `"Alex"` inside it. Simple as that.
+That line creates a box called `name` and puts the text `"Alex"` inside it. Done.
 
 ## The four main types
 
@@ -29,35 +33,24 @@ Python has four types you'll use constantly:
 |------|---------|------------|
 | `str` | `"hello"` | Text (short for *string*) |
 | `int` | `42` | A whole number |
-| `float` | `3.14` | A number with a decimal point |
+| `float` | `3.14` | A number with a decimal |
 | `bool` | `True` | Either `True` or `False` |
 
-Python figures out the type automatically — you don't have to tell it.
+Python figures out the type automatically — you never have to spell it out.
 
 ## Naming your variables
 
 A few quick rules:
 
-- Use lowercase letters and underscores: `my_score` not `MyScore`
-- Make the name describe what's inside: `player_name` is way better than `x`
-- No spaces allowed — use `_` instead
+- Use lowercase with underscores: `player_name` not `PlayerName`
+- Make the name describe what's inside — `score` beats `x` every time
+- No spaces — use `_` instead
 
 ## Checking what's inside
 
-Use `print()` to see what's stored in a variable:
+Use `print()` to see what a variable holds:
 
 ```python
 score = 100
-print(score)  # prints: 100
+print(score)  # 100
 ```
-
-You can print multiple things at once too:
-
-```python
-player = "Jordan"
-score = 250
-print(player, "scored", score, "points")
-# prints: Jordan scored 250 points
-```
-
-Give it a go in the exercise below!

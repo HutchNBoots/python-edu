@@ -11,6 +11,8 @@ export interface LessonData {
   title: string;
   codeExample: string;
   contentHtml: string;
+  keyConcept: string;
+  xp: number;
 }
 
 export async function getLessonData(slug: string): Promise<LessonData> {
@@ -27,6 +29,8 @@ export async function getLessonData(slug: string): Promise<LessonData> {
     title: data.title as string,
     codeExample: data.codeExample as string,
     contentHtml,
+    keyConcept: data.keyConcept as string,
+    xp: data.xp as number,
   };
 }
 
