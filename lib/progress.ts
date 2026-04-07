@@ -14,7 +14,11 @@ export type { PathCompletionRow, ProgressData } from "@/lib/progressUtils";
 export async function createProfile(
   username: string
 ): Promise<{ id: string; username: string }> {
-  if (!supabase) throw new Error("Supabase not configured");
+  // No Supabase configured — create a local-only profile so the app works
+  // without credentials (progress is saved to localStorage only).
+  if (!supabase) {
+    return { id: crypto.randomUUID(), username };
+  }
   const { data, error } = await supabase
     .from("profiles")
     .insert({ username })
