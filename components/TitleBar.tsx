@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NavLink from "@/components/NavLink";
 
 interface TitleBarProps {
   skillProgress: number; // 0–100
@@ -28,8 +29,10 @@ export default function TitleBar({
         flexShrink: 0,
       }}
     >
-      {/* Brand mark */}
-      <div
+      {/* Brand mark — links to home */}
+      <Link
+        href="/"
+        aria-label="dragon.py home"
         style={{
           display: "flex",
           alignItems: "center",
@@ -37,12 +40,13 @@ export default function TitleBar({
           fontSize: "15px",
           fontWeight: 500,
           whiteSpace: "nowrap",
+          textDecoration: "none",
         }}
       >
         <span aria-hidden="true">🐉</span>
         <span style={{ color: "var(--text-primary)" }}>dragon</span>
         <span style={{ color: "var(--accent-primary)" }}>.py</span>
-      </div>
+      </Link>
 
       {/* Skill progress bar */}
       <div
@@ -83,33 +87,10 @@ export default function TitleBar({
       </span>
 
       {/* Nav links */}
-      <nav style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-        <Link
-          href="/lessons"
-          style={{
-            fontSize: "12px",
-            fontWeight: 500,
-            color: "var(--text-muted)",
-            textDecoration: "none",
-            padding: "4px 10px",
-            borderRadius: "6px",
-          }}
-        >
-          Skills
-        </Link>
-        <Link
-          href="/projects"
-          style={{
-            fontSize: "12px",
-            fontWeight: 500,
-            color: "var(--text-muted)",
-            textDecoration: "none",
-            padding: "4px 10px",
-            borderRadius: "6px",
-          }}
-        >
-          Projects
-        </Link>
+      <nav style={{ display: "flex", alignItems: "center" }}>
+        <NavLink href="/">Home</NavLink>
+        <NavLink href="/skill-tree">Skills</NavLink>
+        <NavLink href="/projects">Projects</NavLink>
       </nav>
 
       {/* Spacer */}
