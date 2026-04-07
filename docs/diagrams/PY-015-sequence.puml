@@ -1,0 +1,105 @@
+@startuml PY-015-sequence
+title PY-015 — Home page load & navigation (sequence diagram)
+
+skinparam backgroundColor #1a1a2e
+skinparam sequence {
+  ActorBackgroundColor #16213e
+  ActorBorderColor #4a9eff
+  ActorFontColor #e0e0e0
+  ParticipantBackgroundColor #16213e
+  ParticipantBorderColor #4a9eff
+  ParticipantFontColor #e0e0e0
+  LifeLineBorderColor #4a9eff
+  ArrowColor #4a9eff
+  ArrowFontColor #a0a0a0
+  NoteBackgroundColor #0d2137
+  NoteBorderColor #4a9eff
+  NoteFontColor #c0c0c0
+  BoxBackgroundColor #0f3460
+  BoxBorderColor #4a9eff
+}
+
+actor Learner as L
+participant "HomePage" as HP
+participant "TitleBar\n+ NavLink" as TB
+participant "useSkillProgress" as USP
+participant "localStorage" as LS
+participant "Supabase" as SB
+participant "UsernameModal" as UM
+
+' ─── First-time visitor ──────────────────────────────────────────
+group First visit (no profile)
+  L -> HP : navigates to /
+  activate HP
+
+  HP -> LS : read dragonpy-profile-id
+  LS --> HP : null
+
+  HP --> L : renders HeroSection + UsernameModal\n(TitleBar shown, progress bar empty)
+  activate UM
+
+  L -> UM : enters username, submits
+  UM -> SB : upsert profile row
+  SB --> UM : { id, username }
+  UM -> LS : write dragonpy-profile-id\nwrite dragonpy-username
+  UM --> HP : onReady(id, username)
+  deactivate UM
+
+  HP -> USP : load skill states
+  USP -> LS : read dragonpy-completions
+  LS --> USP : {} (empty)
+  USP --> HP : { totalXp: 0, completedCount: 0 }
+
+  HP --> L : renders ProgressDashboard (0 XP)\n+ QuickActions "Start learning →"
+  deactivate HP
+end
+
+' ─── Returning visitor ───────────────────────────────────────────
+group Returning visit (profile exists)
+  L -> HP : navigates to /
+  activate HP
+
+  HP -> LS : read dragonpy-profile-id
+  LS --> HP : "abc-123"
+
+  HP -> USP : load skill states
+  activate USP
+  USP -> LS : read dragonpy-completions
+  LS --> USP : { variables: ["easy","mid"], loops: ["easy"] }
+  USP --> HP : { totalXp: 150, completedCount: 3 }
+  deactivate USP
+
+  HP --> L : renders TitleBar (progress bar filled)\n+ ProgressDashboard (150 XP, 3 skills)\n+ QuickActions "Continue learning →"
+  deactivate HP
+end
+
+' ─── Navigation between pages ────────────────────────────────────
+group Navigating to Skills
+  L -> TB : clicks "Skills" nav link
+  TB --> L : Next.js router pushes /lessons
+  note right of TB
+    NavLink reads usePathname()
+    Skills link gets active style
+    (accent underline, primary colour)
+  end note
+end
+
+group Navigating to Projects
+  L -> TB : clicks "Projects" nav link
+  TB --> L : Next.js router pushes /projects
+  note right of TB
+    Projects link gets active style
+    Home and Skills links return to muted colour
+  end note
+end
+
+group Navigating home via brand
+  L -> TB : clicks 🐉 dragon.py brand
+  TB --> L : Next.js router pushes /
+  note right of TB
+    Brand mark is a link to /
+    Home NavLink gets active style
+  end note
+end
+
+@enduml

@@ -1,0 +1,130 @@
+@startuml PY-015-component
+title PY-015 — Home page & site navigation (component diagram)
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1a1a2e
+skinparam component {
+  BackgroundColor #16213e
+  BorderColor #4a9eff
+  FontColor #e0e0e0
+}
+skinparam package {
+  BackgroundColor #0f3460
+  BorderColor #4a9eff
+  FontColor #e0e0e0
+}
+skinparam arrow {
+  Color #4a9eff
+  FontColor #a0a0a0
+}
+skinparam note {
+  BackgroundColor #0d2137
+  BorderColor #4a9eff
+  FontColor #c0c0c0
+}
+
+' ─── Shared shell ────────────────────────────────────────────────
+package "Shared shell (all pages)" {
+  [TitleBar] as TB
+  note right of TB
+    Props: skillProgress, skillNumber,
+    totalSkills, streak, totalXp
+    Nav links: Home · Skills · Projects
+    Active link highlighted with
+    var(--accent-primary) underline
+  end note
+
+  [NavLink] as NL
+  note right of NL
+    Wrapper around Next.js <Link>
+    Reads usePathname() to set
+    aria-current="page" + active style
+  end note
+
+  TB --> NL : renders ×3
+}
+
+' ─── Pages ───────────────────────────────────────────────────────
+package "/ (Home page)" {
+  [HomePage] as HP
+
+  [HeroSection] as HERO
+  note right of HERO
+    Dragon emoji + "dragon.py" wordmark
+    Tagline: "Learn Python by building real things"
+    Shown to all users
+  end note
+
+  [ProgressDashboard] as PD
+  note right of PD
+    XP total · skills complete · projects complete
+    Shown only when profile exists
+    Reads from useSkillProgress()
+  end note
+
+  [QuickActions] as QA
+  note right of QA
+    Primary CTA: "Continue learning →" → /lessons
+    Secondary CTA: "View projects →" → /projects
+    Label adapts: "Start learning" for new users
+  end note
+
+  [UsernameModal] as UM
+  note right of UM
+    Shown on first visit (no profile in localStorage)
+    On submit: writes profile to Supabase + localStorage
+  end note
+
+  [ResetProgressButton] as RPB
+  note right of RPB
+    Destructive action — shown only when profile exists
+    Clears localStorage + Supabase row
+  end note
+
+  HP --> TB
+  HP --> HERO
+  HP --> PD
+  HP --> QA
+  HP --> UM
+  HP --> RPB
+}
+
+package "/lessons (Skill tree)" {
+  [SkillTreePage] as STP
+  STP --> TB
+}
+
+package "/projects (Projects)" {
+  [ProjectsPage] as PP
+  PP --> TB
+}
+
+package "/lessons/[skill]/[level] (Exercise)" {
+  [LessonPage] as LP
+  LP --> TB
+}
+
+' ─── Hooks / data ────────────────────────────────────────────────
+package "Hooks & data" {
+  [useSkillProgress] as USP
+  note right of USP
+    Returns: skillStates, totalXp,
+    completedCount, isLoaded
+    Source: localStorage + Supabase
+  end note
+
+  [usePathname (Next.js)] as UPN
+}
+
+PD ..> USP : reads
+TB ..> USP : reads (progress bar)
+NL ..> UPN : reads (active state)
+
+' ─── Navigation flows ────────────────────────────────────────────
+QA --> STP : href /lessons
+QA --> PP  : href /projects
+NL --> HP  : href /
+NL --> STP : href /lessons
+NL --> PP  : href /projects
+
+@enduml
