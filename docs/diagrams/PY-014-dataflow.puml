@@ -1,0 +1,83 @@
+@startuml PY-014-dataflow
+title PY-014 · Skill Completion → Unlock Gate → Project State Displayed
+
+skinparam backgroundColor #1e1e2e
+skinparam activity {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+  ArrowColor #89b4fa
+  StartColor #7c6af7
+  EndColor #34d399
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+
+start
+
+:useSkillProgress()
+returns skillStates[];
+
+note right
+  Each SkillState has paths[]:
+    { level, status: complete |
+      available | locked }
+  Already computed from
+  localStorage + Supabase merge.
+end note
+
+:For each project definition
+in projects.json;
+
+:evaluateProjectState(project, skillStates);
+
+note right
+  Checks each requirement in
+  project.unlockGate[]:
+    { skillId, minLevel }
+  A requirement is met when the
+  skill's path at minLevel has
+  status === "complete".
+end note
+
+if (all gate requirements met?) then (yes)
+  if (project marked complete\nin localStorage?) then (yes)
+    :ProjectState = "complete";
+    note right: Shows badge + XP awarded
+  else (no)
+    :ProjectState = "available";
+    note right: Shows Start / Continue CTA
+  endif
+else (no)
+  :ProjectState = "locked";
+  :Collect unmet requirements\nas UnlockRequirement[];
+  note right
+    e.g. [
+      { skill: "Loops", level: "mid" },
+      { skill: "Conditions", level: "mid" }
+    ]
+    Each links to the relevant
+    exercise page.
+  end note
+endif
+
+:Render ProjectCard with state;
+
+note right
+  locked    → dimmed card,
+              lock icon,
+              UnlockRequirements list
+  available → full opacity,
+              ProjectCTA button
+  complete  → ProjectBadge,
+              XP total shown
+end note
+
+:Repeat for all 5 projects;
+
+stop
+
+@enduml

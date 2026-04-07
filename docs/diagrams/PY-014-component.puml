@@ -1,0 +1,104 @@
+@startuml PY-014-component
+title PY-014 · Projects Page — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1e1e2e
+skinparam component {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam ArrowColor #89b4fa
+
+package "app/projects/page.tsx" {
+  component [ProjectsPage] as Page
+  note right of Page
+    Client component.
+    Reads live progress via
+    useSkillProgress hook.
+  end note
+}
+
+package "components/ (new)" {
+  component [ProjectCard] as Card
+  note right of Card
+    One card per project (5 total).
+    Visual state drives layout:
+      locked    → dimmed, lock icon
+      available → CTA button
+      complete  → badge + XP
+  end note
+
+  component [UnlockRequirements] as Unlock
+  note right of Unlock
+    Shown only when locked.
+    Lists each missing skill + level
+    as a pill (e.g. "Loops mid").
+    Links each pill to the
+    relevant exercise page.
+  end note
+
+  component [ProjectBadge] as Badge
+  note right of Badge
+    Shown only when complete.
+    Icon + project name badge.
+    XP awarded displayed below.
+  end note
+
+  component [ProjectCTA] as CTA
+  note right of CTA
+    Shown when available or
+    in-progress. "Start" if not
+    started, "Continue" if
+    starter code has been touched.
+    Disabled stub for now —
+    links to project page (PY-007+).
+  end note
+}
+
+package "lib/ (new)" {
+  component [projectGates.ts] as Gates
+  note right of Gates
+    Defines all 5 projects:
+      id, name, complexity,
+      unlockGate (skill+level pairs),
+      xpReward, badgeIcon
+    evaluateProjectState(project,
+      skillStates) → ProjectState
+  end note
+}
+
+package "content/" {
+  component [projects.json] as Content
+  note right of Content
+    Static project definitions.
+    name, description,
+    complexity, unlockGate[],
+    xpReward, badgeIcon.
+  end note
+}
+
+package "hooks/ (reused)" {
+  component [useSkillProgress] as Hook
+  note right of Hook
+    Returns skillStates with
+    per-path completion status.
+    Already built in PY-004/013.
+  end note
+}
+
+Page --> Card : renders × 5
+Card --> Unlock : if locked
+Card --> Badge  : if complete
+Card --> CTA    : if available
+
+Page ..> Hook : useSkillProgress()
+Page ..> Gates : evaluateProjectState()
+Gates ..> Content : reads project definitions
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml PY-014-sequence
+title PY-014 · Projects Page — Sequence Diagram
+
+skinparam backgroundColor #1e1e2e
+skinparam sequence {
+  ArrowColor #89b4fa
+  ActorBorderColor #89b4fa
+  ActorBackgroundColor #2a2a3d
+  ActorFontColor #cdd6f4
+  ParticipantBorderColor #555577
+  ParticipantBackgroundColor #2a2a3d
+  ParticipantFontColor #cdd6f4
+  LifeLineBorderColor #555577
+  BoxBackgroundColor #313244
+  BoxBorderColor #555577
+}
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+actor Learner
+participant "ProjectsPage\n/projects" as Page
+participant "useSkillProgress\n(hook)" as Hook
+participant "localStorage\n+ Supabase" as Storage
+participant "projectGates.ts" as Gates
+participant "projects.json" as Content
+participant "ProjectCard × 5" as Cards
+
+== Page load ==
+
+Learner -> Page : navigates to /projects
+activate Page
+
+Page -> Hook : useSkillProgress()
+activate Hook
+Hook -> Storage : loadCompletions()\n+ Supabase merge
+Storage --> Hook : completions
+Hook -> Hook : computeSkillStates(completions)
+Hook --> Page : { skillStates, totalXp, isLoaded }
+deactivate Hook
+
+Page -> Gates : evaluateProjectState(project, skillStates)\n× 5
+activate Gates
+Gates -> Content : import projects.json
+Content --> Gates : project definitions\n(id, name, unlockGate[], xpReward, badgeIcon)
+
+loop for each of 5 projects
+  Gates -> Gates : check each unlockGate requirement\nagainst skillStates path status
+  note over Gates
+    Requirement met when:
+    skillState.paths.find(p => p.level === minLevel)
+                    .status === "complete"
+  end note
+  Gates --> Page : ProjectState\n(locked | available | complete)\n+ unmetRequirements[] if locked
+end
+
+deactivate Gates
+
+Page -> Cards : render(projectStates[])
+activate Cards
+
+loop for each ProjectCard
+  alt state === "locked"
+    Cards --> Learner : dimmed card\nlock icon + UnlockRequirements pills\n(each links to exercise page)
+  else state === "available"
+    Cards --> Learner : full card\n"Start" CTA button (stub)
+  else state === "complete"
+    Cards --> Learner : full card\nbadge icon + XP awarded
+  end
+end
+
+deactivate Cards
+deactivate Page
+
+== Learner clicks an UnlockRequirement pill ==
+
+Learner -> Cards : clicks "Loops mid" pill
+Cards --> Learner : navigates to /lessons/loops/mid
+
+== Learner clicks Start on an available project ==
+
+Learner -> Cards : clicks "Start"
+note over Cards
+  Project pages not yet built
+  (PY-007 through PY-012).
+  CTA is a disabled stub for now.
+end note
+Cards --> Learner : button is disabled\n(tooltip: "Coming soon")
+
+@enduml
