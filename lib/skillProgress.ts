@@ -118,6 +118,13 @@ export function completedSkillsCount(skillStates: SkillState[]): number {
     .length;
 }
 
+export function markPathComplete(skillId: string, level: PathLevel): void {
+  const completions = loadCompletions();
+  if (!completions[skillId]) completions[skillId] = new Set();
+  completions[skillId].add(level);
+  saveCompletions(completions);
+}
+
 export function firstIncompletePathLevel(skill: SkillState): PathLevel | null {
   const path = skill.paths.find((p) => p.status !== "complete");
   return path?.level ?? null;

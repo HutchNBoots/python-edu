@@ -1,0 +1,75 @@
+@startuml PY-005-component
+title PY-005 · Easy Path Exercise Page — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1e1e2e
+skinparam component {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam ArrowColor #89b4fa
+
+package "app/lessons/[slug]/[level]/page.tsx" {
+  component [ExercisePage] as Page
+}
+
+package "components/" {
+  component [TitleBar] as TitleBar
+  note right of TitleBar : Reused from PY-002\nShows total XP (live)
+
+  component [SkillBar] as SkillBar
+  note right of SkillBar : Shows easy/mid/hard\npath states for this skill
+
+  component [ExercisePanel] as ExPanel
+  note right of ExPanel : Left column\nInstructions + expected output
+
+  component [ExerciseInstructions] as Instructions
+  note right of Instructions : Task description\nfrom markdown frontmatter
+
+  component [ExpectedOutputBox] as Expected
+  note right of Expected : Shows the exact output\nthe learner must produce
+
+  component [HelpMeButton] as Help
+  note right of Help : Stub for PY-008\nDisabled until PY-008 is built
+
+  component [RightColumn] as Right
+  note right of Right : Reused from PY-002\nCode editor + OutputPanel
+
+  component [XPRewardBanner] as XPBanner
+  note right of XPBanner : Slides in on completion\nShows XP earned + "path complete"\nLinks to next path or skill tree
+}
+
+package "lib/" {
+  component [exercises.ts] as ExLib
+  note right of ExLib : Loads exercise markdown\nfrom /content/exercises/
+
+  component [skillProgress.ts] as ProgressLib
+  note right of ProgressLib : markPathComplete()\nReused from PY-004
+}
+
+package "content/exercises/" {
+  component [variables-easy.md\nloops-easy.md\n...] as Content
+  note right of Content : Frontmatter:\n  title, instructions,\n  starterCode, expectedOutput,\n  xpReward
+}
+
+Page --> TitleBar
+Page --> SkillBar
+Page --> ExPanel
+Page --> Right
+Page --> XPBanner
+
+ExPanel --> Instructions
+ExPanel --> Expected
+ExPanel --> Help
+
+Page ..> ExLib : loads exercise
+ExLib ..> Content : reads markdown
+Page ..> ProgressLib : markPathComplete() on success
+
+@enduml

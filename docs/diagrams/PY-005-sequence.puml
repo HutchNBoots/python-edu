@@ -1,0 +1,93 @@
+@startuml PY-005-sequence
+title PY-005 · Easy Path Exercise — Sequence Diagram
+
+skinparam backgroundColor #1e1e2e
+skinparam sequence {
+  ArrowColor #89b4fa
+  ActorBorderColor #89b4fa
+  ActorBackgroundColor #2a2a3d
+  ActorFontColor #cdd6f4
+  ParticipantBorderColor #555577
+  ParticipantBackgroundColor #2a2a3d
+  ParticipantFontColor #cdd6f4
+  LifeLineBorderColor #555577
+  BoxBackgroundColor #313244
+  BoxBorderColor #555577
+}
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+actor Learner
+participant "ExercisePage\n/lessons/[slug]/[level]" as Page
+participant "exercises.ts" as ExLib
+participant "content/exercises/\n<slug>-<level>.md" as Content
+participant "skillProgress.ts\n(localStorage)" as Progress
+participant "ExercisePanel\n+ RightColumn" as UI
+participant "Pyodide\n(browser)" as Pyodide
+participant "XPRewardBanner" as Banner
+
+== Page load ==
+
+Learner -> Page : navigate to /lessons/variables/easy
+
+activate Page
+
+Page -> ExLib : getExercise("variables", "easy")
+activate ExLib
+ExLib -> Content : read variables-easy.md
+Content --> ExLib : { title, instructions,\n  starterCode, expectedOutput, xpReward }
+ExLib --> Page : ExerciseData
+deactivate ExLib
+
+Page -> Progress : loadCompletions()
+Progress --> Page : completions (localStorage)
+
+note over Page
+  If easy path already complete,
+  redirect to mid path.
+  (Enforces AC5 — no skipping)
+end note
+
+Page -> UI : render(exerciseData, pathStates)
+UI --> Learner : exercise page displayed\n(instructions left, editor right)
+
+deactivate Page
+
+== Exercise attempt ==
+
+Learner -> UI : edits code in editor
+Learner -> UI : clicks Run
+
+activate UI
+UI -> Pyodide : runCode(learnerCode)
+activate Pyodide
+Pyodide --> UI : { output, rawError }
+deactivate Pyodide
+
+alt rawError present
+  UI --> Learner : friendly error via PY-003 flow
+else output matches expectedOutput
+  UI -> Progress : markPathComplete(skillId, level, xpReward)
+  activate Progress
+  Progress -> Progress : update localStorage
+  Progress --> UI : updated completions
+  deactivate Progress
+
+  UI -> Banner : show(xpReward, nextPath)
+  activate Banner
+  Banner --> Learner : XP reward banner slides in\n("+50 XP · Easy path complete!")
+  deactivate Banner
+
+  note over UI
+    TitleBar XP total updates live.
+    "Next" button on banner goes to
+    mid path or skill tree if all done.
+  end note
+else output does not match
+  UI --> Learner : output shown, no completion\n(learner can keep trying)
+end
+
+deactivate UI
+
+@enduml
