@@ -1,0 +1,114 @@
+@startuml PY-006-sequence
+title PY-006 · Path Unlock Flow — Sequence Diagram
+
+skinparam backgroundColor #1e1e2e
+skinparam sequence {
+  ArrowColor #89b4fa
+  ActorBorderColor #89b4fa
+  ActorBackgroundColor #2a2a3d
+  ActorFontColor #cdd6f4
+  ParticipantBorderColor #555577
+  ParticipantBackgroundColor #2a2a3d
+  ParticipantFontColor #cdd6f4
+  LifeLineBorderColor #555577
+  BoxBackgroundColor #313244
+  BoxBorderColor #555577
+}
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+actor Learner
+participant "ExerciseShell\n(client)" as Shell
+participant "skillProgress.ts\n(localStorage)" as Progress
+participant "ExerciseCodePanel" as Panel
+participant "XPRewardBanner" as Banner
+
+== Easy path complete — mid unlocks ==
+
+Learner -> Panel : runs code, output matches expected
+activate Panel
+
+Panel -> Progress : markPathComplete("variables", "easy")
+activate Progress
+Progress -> Progress : persist to localStorage
+Progress --> Panel : done
+deactivate Progress
+
+Panel -> Banner : show(xpReward=50, nextHref="/lessons/variables/mid")
+Banner --> Learner : "Easy path complete! +50 XP\n[Try Mid →]"
+
+deactivate Panel
+
+Learner -> Shell : clicks "Try Mid"
+activate Shell
+
+Shell -> Progress : loadCompletions()
+Progress --> Shell : { variables: { easy: true } }
+
+Shell -> Shell : computeSkillStates(completions)
+
+note over Shell
+  variables easy  → complete
+  variables mid   → available  ✓ (prev path done)
+  variables hard  → locked     (mid not yet done)
+end note
+
+Shell --> Learner : mid path exercise rendered\n(SkillBar: Easy ✓ · Mid ● · Hard 🔒)
+
+deactivate Shell
+
+== Mid path complete — hard unlocks ==
+
+Learner -> Panel : runs code, output matches expected
+activate Panel
+
+Panel -> Progress : markPathComplete("variables", "mid")
+activate Progress
+Progress -> Progress : persist to localStorage
+Progress --> Panel : done
+deactivate Progress
+
+Panel -> Banner : show(xpReward=100, nextHref="/lessons/variables/hard")
+Banner --> Learner : "Mid path complete! +100 XP\n[Try Hard →]"
+
+deactivate Panel
+
+Learner -> Shell : clicks "Try Hard"
+activate Shell
+
+Shell -> Progress : loadCompletions()
+Progress --> Shell : { variables: { easy: true, mid: true } }
+
+Shell -> Shell : computeSkillStates(completions)
+
+note over Shell
+  variables easy  → complete
+  variables mid   → complete
+  variables hard  → available  ✓ (prev path done)
+end note
+
+Shell --> Learner : hard path exercise rendered\n(SkillBar: Easy ✓ · Mid ✓ · Hard ●)
+
+deactivate Shell
+
+== Attempt to skip — locked path redirect ==
+
+Learner -> Shell : manually navigates to /lessons/variables/hard\n(before mid is complete)
+activate Shell
+
+Shell -> Progress : loadCompletions()
+Progress --> Shell : { variables: { easy: true } }
+
+Shell -> Shell : computeSkillStates → hard = locked
+
+note over Shell
+  useEffect detects locked path.
+  Redirects to first non-complete path.
+end note
+
+Shell --> Learner : redirected to /lessons/variables/mid
+
+deactivate Shell
+
+@enduml

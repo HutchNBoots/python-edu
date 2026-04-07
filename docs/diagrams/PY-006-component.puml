@@ -1,0 +1,118 @@
+@startuml PY-006-component
+title PY-006 · Mid & Hard Path Exercises — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1e1e2e
+skinparam component {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam ArrowColor #89b4fa
+
+package "app/lessons/[slug]/[level]/page.tsx" {
+  component [ExercisePage] as Page
+  note right of Page
+    Already exists from PY-005.
+    No changes needed — handles
+    easy, mid, and hard via
+    the same route.
+  end note
+}
+
+package "components/ (all reused from PY-005)" {
+  component [ExerciseShell] as Shell
+  note right of Shell
+    Reads localStorage on mount.
+    Redirects locked paths to
+    first incomplete path.
+    SkillBar reflects live state.
+  end note
+
+  component [ExercisePanel] as ExPanel
+  note right of ExPanel
+    Instructions + ExpectedOutputBox.
+    Content changes per level —
+    component is unchanged.
+  end note
+
+  component [ExerciseCodePanel] as CodePanel
+  note right of CodePanel
+    Trimmed exact-match comparison.
+    markPathComplete on success.
+    XPRewardBanner on completion.
+    Run button label reflects state.
+  end note
+
+  component [XPRewardBanner] as Banner
+  note right of Banner
+    Shows level-specific XP:
+      Easy  → +50 XP
+      Mid   → +100 XP
+      Hard  → +150 XP
+    "Next" link advances to next
+    path, or skill tree if last.
+  end note
+}
+
+package "content/exercises/ (new files for PY-006)" {
+  component [variables-mid.md]   as VM
+  component [variables-hard.md]  as VH
+  component [loops-mid.md]       as LM
+  component [loops-hard.md]      as LH
+  component [conditions-mid.md]  as CM
+  component [conditions-hard.md] as CH
+
+  note bottom of VM
+    Mid: skeleton only,
+    learner writes the logic.
+    xpReward: 100
+  end note
+
+  note bottom of VH
+    Hard: minimal prompt,
+    learner solves independently.
+    xpReward: 150
+  end note
+}
+
+package "lib/" {
+  component [exercises.ts] as ExLib
+  note right of ExLib
+    getExercise(slug, level)
+    getAllExerciseParams()
+    No changes needed — already
+    reads any <slug>-<level>.md.
+  end note
+
+  component [skillProgress.ts] as Progress
+  note right of Progress
+    markPathComplete()
+    computeSkillStates()
+    loadCompletions()
+    No changes needed — unlock
+    logic already handles all levels.
+  end note
+}
+
+Page --> Shell
+Shell --> ExPanel
+Shell --> CodePanel
+CodePanel --> Banner
+
+Shell ..> Progress : loadCompletions()\ncomputeSkillStates()
+CodePanel ..> Progress : markPathComplete()
+Page ..> ExLib : getExercise(slug, level)
+ExLib ..> VM : reads
+ExLib ..> VH : reads
+ExLib ..> LM : reads
+ExLib ..> LH : reads
+ExLib ..> CM : reads
+ExLib ..> CH : reads
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml PY-006-datamodel
+title PY-006 · XP Values per Path Level — Data Model
+
+skinparam backgroundColor #1e1e2e
+skinparam class {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+  HeaderBackgroundColor #313244
+}
+skinparam ArrowColor #89b4fa
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+entity "Path (in skills.json)" as Path {
+  * level     : "easy" | "mid" | "hard"
+  * xpReward  : number
+  --
+  easy  → 50 XP
+  mid   → 100 XP
+  hard  → 150 XP
+}
+
+note right of Path
+  XP values are defined per-path
+  in content/skills.json.
+  No code changes needed to
+  adjust XP — edit the JSON.
+end note
+
+entity "PathCompletion (localStorage)" as Completion {
+  * key   : "dragonpy-progress"
+  --
+  Stored as:
+  {
+    "<skillId>": ["easy", "mid", "hard"]
+  }
+
+  xpEarned is derived at runtime:
+    sum of xpReward for each
+    completed level
+}
+
+entity "ExerciseData (markdown frontmatter)" as Exercise {
+  * skillId        : string
+  * level          : "easy" | "mid" | "hard"
+  * starterCode    : string   ← scaffolding decreases per level
+  * expectedOutput : string
+  * xpReward       : number   ← must match skills.json
+  --
+  easy  → guided, most code provided
+  mid   → partial scaffold, learner fills more
+  hard  → minimal guidance, learner solves alone
+}
+
+note bottom of Exercise
+  Scaffolding level is expressed
+  in starterCode content, not code.
+  Easy: structure + gaps.
+  Mid:  skeleton only.
+  Hard: blank or one-liner prompt.
+end note
+
+Path "1" -- "1" Exercise : describes
+Path "1" --o{ "0..1" Completion : recorded when complete
+
+@enduml
