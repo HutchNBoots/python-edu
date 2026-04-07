@@ -1,18 +1,40 @@
 import UnlockRequirements from "@/components/UnlockRequirements";
 import ProjectBadge from "@/components/ProjectBadge";
+import { PROJECTS } from "@/lib/projectGates";
 import type { ProjectState } from "@/lib/projectGates";
 
-const COMPLEXITY_LABEL: Record<string, string> = {
-  starter:  "Starter",
-  mid:      "Mid",
-  advanced: "Advanced",
+const COMPLEXITY_DOTS: Record<string, number> = {
+  starter:  1,
+  mid:      2,
+  advanced: 3,
 };
 
-const COMPLEXITY_COLOUR: Record<string, string> = {
-  starter:  "var(--accent-green)",
-  mid:      "var(--accent-primary-text)",
-  advanced: "var(--accent-orange)",
-};
+function PadlockIcon({ locked }: { locked: boolean }) {
+  return (
+    <span style={{ fontSize: "22px", lineHeight: 1 }} aria-hidden="true">
+      {locked ? "🔒" : "🔓"}
+    </span>
+  );
+}
+
+function DifficultyDots({ complexity }: { complexity: string }) {
+  const filled = COMPLEXITY_DOTS[complexity] ?? 1;
+  return (
+    <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+      {[1, 2, 3].map((n) => (
+        <div
+          key={n}
+          style={{
+            width: "7px",
+            height: "7px",
+            borderRadius: "50%",
+            backgroundColor: n <= filled ? "var(--accent-primary)" : "var(--accent-primary-border)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 interface ProjectCardProps {
   projectState: ProjectState;
@@ -40,9 +62,41 @@ export default function ProjectCard({ projectState }: ProjectCardProps) {
     >
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-        <span style={{ fontSize: "28px", lineHeight: 1, flexShrink: 0 }} aria-hidden="true">
-          {isLocked ? "🔒" : def.badgeIcon}
-        </span>
+        {/* Padlock icon */}
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "8px",
+            backgroundColor: isLocked ? "var(--bg-elevated)" : "var(--accent-primary-subtle)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <PadlockIcon locked={isLocked} />
+        </div>
+
+        {/* Project number */}
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "8px",
+            backgroundColor: "var(--bg-elevated)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            fontSize: "14px",
+            fontWeight: 700,
+            color: isLocked ? "var(--text-muted)" : "var(--text-primary)",
+          }}
+        >
+          {PROJECTS.findIndex((p) => p.id === def.id) + 1}
+        </div>
+
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <h2
@@ -55,21 +109,22 @@ export default function ProjectCard({ projectState }: ProjectCardProps) {
             >
               {def.name}
             </h2>
-            <span
+            <DifficultyDots complexity={def.complexity} />
+            <div
               style={{
-                fontSize: "10px",
-                fontWeight: 600,
-                letterSpacing: "0.07em",
-                textTransform: "uppercase",
-                color: COMPLEXITY_COLOUR[def.complexity],
-                padding: "2px 7px",
-                border: `1px solid ${COMPLEXITY_COLOUR[def.complexity]}`,
+                marginLeft: "auto",
+                padding: "2px 8px",
+                backgroundColor: "var(--accent-primary-subtle)",
+                border: "1px solid var(--accent-primary-border)",
                 borderRadius: "9999px",
-                opacity: 0.8,
+                fontSize: "11px",
+                fontWeight: 600,
+                color: "var(--accent-primary-text)",
+                whiteSpace: "nowrap",
               }}
             >
-              {COMPLEXITY_LABEL[def.complexity]}
-            </span>
+              +{def.xpReward} XP
+            </div>
           </div>
           <p
             style={{

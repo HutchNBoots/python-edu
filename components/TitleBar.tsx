@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 interface TitleBarProps {
   skillProgress: number; // 0–100
   skillNumber: number;
@@ -79,6 +81,36 @@ export default function TitleBar({
       >
         Skill {skillNumber} of {totalSkills}
       </span>
+
+      {/* Nav links */}
+      <nav style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <Link
+          href="/lessons"
+          style={{
+            fontSize: "12px",
+            fontWeight: 500,
+            color: "var(--text-muted)",
+            textDecoration: "none",
+            padding: "4px 10px",
+            borderRadius: "6px",
+          }}
+        >
+          Skills
+        </Link>
+        <Link
+          href="/projects"
+          style={{
+            fontSize: "12px",
+            fontWeight: 500,
+            color: "var(--text-muted)",
+            textDecoration: "none",
+            padding: "4px 10px",
+            borderRadius: "6px",
+          }}
+        >
+          Projects
+        </Link>
+      </nav>
 
       {/* Spacer */}
       <div style={{ flex: 1 }} />

@@ -72,12 +72,12 @@ As a learner, I want to open a skill lesson so that I can read a clear
 explanation and see a code example before attempting an exercise.
 
 **Acceptance criteria**
-- [ ] Lesson page loads within 2 seconds
-- [ ] Page displays: title, explanation text, syntax-highlighted code example
-- [ ] A "Try it" button is visible and navigates to the exercise
-- [ ] Page is readable on mobile (min width 320px)
-- [ ] Lesson content is loaded from a markdown file in /content/ — not hardcoded
-- [ ] Language and tone is age-appropriate for teenagers
+- [x] Lesson page loads within 2 seconds
+- [x] Page displays: title, explanation text, syntax-highlighted code example
+- [x] A "Try it" button is visible and navigates to the exercise
+- [x] Page is readable on mobile (min width 320px)
+- [x] Lesson content is loaded from a markdown file in /content/ — not hardcoded
+- [x] Language and tone is age-appropriate for teenagers
 
 **Diagrams required before build**
 - Component diagram: lesson page structure
@@ -92,12 +92,12 @@ As a learner, I want to type Python code and see the output immediately,
 so that I can experiment without installing anything on my computer.
 
 **Acceptance criteria**
-- [ ] Code editor is syntax-highlighted and supports tab indentation
-- [ ] "Run" button executes the code and shows output within 3 seconds
-- [ ] Output area clears before each new run
-- [ ] Execution runs entirely in the browser using Pyodide — no server execution
-- [ ] Editor retains the learner's code if they navigate away and return
-- [ ] Works on Chrome and Edge on Windows
+- [x] Code editor is syntax-highlighted and supports tab indentation
+- [x] "Run" button executes the code and shows output within 3 seconds
+- [x] Output area clears before each new run
+- [x] Execution runs entirely in the browser using Pyodide — no server execution
+- [x] Editor retains the learner's code if they navigate away and return
+- [x] Works on Chrome and Edge on Windows
 
 **Diagrams required before build**
 - Sequence diagram: learner clicks Run → Pyodide executes → output displayed
@@ -112,12 +112,12 @@ As a learner, I want runtime errors explained in plain English, so that I
 understand what went wrong without being confused by technical jargon.
 
 **Acceptance criteria**
-- [ ] When Pyodide returns an error, the raw traceback is not shown to the learner
-- [ ] A Claude Haiku API call is made with the error and the learner's code
-- [ ] A plain English explanation is displayed within 3 seconds
-- [ ] The explanation is encouraging in tone — never critical
-- [ ] The raw error is available via a "Show technical detail" toggle for curiosity
-- [ ] If the AI call fails, a sensible fallback message is shown
+- [x] When Pyodide returns an error, the raw traceback is not shown to the learner
+- [x] A Claude Haiku API call is made with the error and the learner's code
+- [x] A plain English explanation is displayed within 3 seconds
+- [x] The explanation is encouraging in tone — never critical
+- [x] The raw error is available via a "Show technical detail" toggle for curiosity
+- [x] If the AI call fails, a sensible fallback message is shown
 
 **Diagrams required before build**
 - Sequence diagram: error → API call → friendly message displayed
@@ -136,12 +136,12 @@ As a learner, I want to see all available skills and which ones I have
 completed, so that I know what to work on next.
 
 **Acceptance criteria**
-- [ ] Skill tree page shows all skills: Variables, Loops, Conditions (core) plus additional skills
-- [ ] Each skill shows which paths are completed (easy / mid / hard) with a clear visual state
-- [ ] Locked skills are visually distinct from available ones
-- [ ] Completed paths show XP earned
-- [ ] Clicking a skill navigates to the first incomplete path for that skill
-- [ ] Page works on mobile
+- [x] Skill tree page shows all skills: Variables, Loops, Conditions (core) plus additional skills
+- [x] Each skill shows which paths are completed (easy / mid / hard) with a clear visual state
+- [x] Locked skills are visually distinct from available ones
+- [x] Completed paths show XP earned
+- [x] Clicking a skill navigates to the first incomplete path for that skill
+- [x] Page works on mobile
 
 **Diagrams required before build**
 - Component diagram: skill tree layout
@@ -156,12 +156,12 @@ As a learner, I want to complete a guided exercise for a skill so that I
 can learn the concept with support before trying it independently.
 
 **Acceptance criteria**
-- [ ] Easy path exercise loads with clear instructions and starter code pre-filled
-- [ ] Learner fills in the missing parts and runs their code
-- [ ] If the output matches the expected result, the path is marked complete
-- [ ] XP is awarded and displayed immediately on completion
-- [ ] Learner cannot skip to mid or hard path without completing easy first
-- [ ] A "Give me a hint" button is available (links to PY-008)
+- [x] Easy path exercise loads with clear instructions and starter code pre-filled
+- [x] Learner fills in the missing parts and runs their code
+- [x] If the output matches the expected result, the path is marked complete
+- [x] XP is awarded and displayed immediately on completion
+- [x] Learner cannot skip to mid or hard path without completing easy first
+- [x] A "Give me a hint" button is available (links to PY-008)
 
 **Diagrams required before build**
 - Sequence diagram: exercise attempt → output check → XP award
@@ -176,12 +176,12 @@ As a learner, I want to attempt harder exercises once I've completed the
 easy path, so that I can deepen my understanding of each skill.
 
 **Acceptance criteria**
-- [ ] Mid path: less scaffolding, learner writes more of the solution themselves
-- [ ] Hard path: minimal guidance, learner solves independently
-- [ ] Mid path unlocks only after easy path is complete for that skill
-- [ ] Hard path unlocks only after mid path is complete
-- [ ] Each path awards XP on completion — hard path awards more XP than mid, mid more than easy
-- [ ] Completion state persists between sessions
+- [x] Mid path: less scaffolding, learner writes more of the solution themselves
+- [x] Hard path: minimal guidance, learner solves independently
+- [x] Mid path unlocks only after easy path is complete for that skill
+- [x] Hard path unlocks only after mid path is complete
+- [x] Each path awards XP on completion — hard path awards more XP than mid, mid more than easy
+- [x] Completion state persists between sessions
 
 **Diagrams required before build**
 - Sequence diagram: path unlock flow
@@ -330,10 +330,10 @@ As a learner, I want the site to remember my progress so that I can pick
 up exactly where I left off each time I return.
 
 **Acceptance criteria**
-- [ ] Completed paths, earned XP, and unlocked projects persist after browser close
-- [ ] Progress is associated with a learner profile (simple username, no password required at MVP)
-- [ ] A progress summary is shown on the home page: XP total, skills complete, projects complete
-- [ ] Progress resets only when the learner explicitly clicks "Reset my progress"
+- [x] Completed paths, earned XP, and unlocked projects persist after browser close
+- [x] Progress is associated with a learner profile (simple username, no password required at MVP)
+- [x] A progress summary is shown on the home page: XP total, skills complete, projects complete
+- [x] Progress resets only when the learner explicitly clicks "Reset my progress"
 
 **Diagrams required before build**
 - ERD: learner profile + progress data model
@@ -349,11 +349,11 @@ locked ones showing exactly what I need to do to unlock them, so that I
 always have a clear next goal.
 
 **Acceptance criteria**
-- [ ] All five projects are visible on the projects page at all times
-- [ ] Locked projects show: which skills are still needed and at which path level
-- [ ] Unlocked projects show: a Start or Continue button
-- [ ] Completed projects show: the badge earned and XP awarded
-- [ ] Visual design is engaging and motivating — not clinical
+- [x] All five projects are visible on the projects page at all times
+- [x] Locked projects show: which skills are still needed and at which path level
+- [x] Unlocked projects show: a Start or Continue button
+- [x] Completed projects show: the badge earned and XP awarded
+- [x] Visual design is engaging and motivating — not clinical
 
 **Diagrams required before build**
 - Component diagram: projects page layout
@@ -365,17 +365,17 @@ always have a clear next goal.
 
 | Story  | Epic  | Status      | Priority |
 |--------|-------|-------------|----------|
-| PY-001 | EP-01 | To do       | High     |
-| PY-002 | EP-01 | To do       | High     |
-| PY-003 | EP-01 | To do       | High     |
-| PY-004 | EP-02 | To do       | High     |
-| PY-005 | EP-02 | To do       | High     |
-| PY-006 | EP-02 | To do       | Medium   |
+| PY-001 | EP-01 | Done        | High     |
+| PY-002 | EP-01 | Done        | High     |
+| PY-003 | EP-01 | Done        | High     |
+| PY-004 | EP-02 | Done        | High     |
+| PY-005 | EP-02 | Done        | High     |
+| PY-006 | EP-02 | Done        | Medium   |
 | PY-007 | EP-03 | To do       | Medium   |
 | PY-008 | EP-03 | To do       | Medium   |
 | PY-009 | EP-03 | To do       | Medium   |
 | PY-010 | EP-03 | To do       | Medium   |
 | PY-011 | EP-03 | To do       | Low      |
 | PY-012 | EP-03 | To do       | Low      |
-| PY-013 | EP-05 | To do       | High     |
-| PY-014 | EP-05 | To do       | Medium   |
+| PY-013 | EP-05 | Done        | High     |
+| PY-014 | EP-05 | Done        | Medium   |
