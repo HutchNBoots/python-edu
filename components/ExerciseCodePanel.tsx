@@ -8,6 +8,7 @@ import { runCode } from "@/lib/pyodide";
 import { stripPaths } from "@/lib/stripPaths";
 import { markPathComplete } from "@/lib/skillProgress";
 import type { PathLevel } from "@/lib/skillProgress";
+import { saveCompletion } from "@/lib/progress";
 
 interface ExerciseCodePanelProps {
   skillId: string;
@@ -82,6 +83,11 @@ export default function ExerciseCodePanel({
     if (trimmedOutput === trimmedExpected) {
       if (!isComplete) {
         markPathComplete(skillId, level);
+        // Fire-and-forget sync to Supabase; localStorage is already updated
+        const profileId = localStorage.getItem("dragonpy-profile-id");
+        if (profileId) {
+          saveCompletion(profileId, skillId, level, xpReward).catch(() => {});
+        }
         setIsComplete(true);
       }
     }

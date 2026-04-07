@@ -1,0 +1,113 @@
+@startuml PY-013-sequence
+title PY-013 · Progress Saved & Home Page Updated — Sequence Diagram
+
+skinparam backgroundColor #1e1e2e
+skinparam sequence {
+  ArrowColor #89b4fa
+  ActorBorderColor #89b4fa
+  ActorBackgroundColor #2a2a3d
+  ActorFontColor #cdd6f4
+  ParticipantBorderColor #555577
+  ParticipantBackgroundColor #2a2a3d
+  ParticipantFontColor #cdd6f4
+  LifeLineBorderColor #555577
+  BoxBackgroundColor #313244
+  BoxBorderColor #555577
+}
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+actor Learner
+participant "Home page\n/" as Home
+participant "UsernameModal" as Modal
+participant "lib/progress.ts" as Lib
+participant "Supabase" as DB
+participant "localStorage" as LS
+participant "ExerciseCodePanel" as Panel
+participant "useSkillProgress\n(hook)" as Hook
+
+== First visit — username setup ==
+
+Learner -> Home : opens site for the first time
+activate Home
+Home -> LS : getItem("dragonpy-profile-id")
+LS --> Home : null
+
+Home -> Modal : show()
+activate Modal
+Modal --> Learner : "What's your name?"
+Learner -> Modal : types "Alex", clicks Start
+
+Modal -> Lib : createProfile("Alex")
+activate Lib
+Lib -> DB : INSERT INTO profiles (username)
+DB --> Lib : { id: "uuid-123", username: "Alex" }
+Lib --> Modal : profileId = "uuid-123"
+deactivate Lib
+
+Modal -> LS : setItem("dragonpy-profile-id", "uuid-123")
+Modal -> Home : profileId ready
+deactivate Modal
+
+Home -> Lib : loadProgress("uuid-123")
+activate Lib
+Lib -> DB : SELECT * FROM path_completions\nWHERE profile_id = "uuid-123"
+DB --> Lib : [] (empty — new learner)
+Lib --> Home : { completions: [], totalXp: 0, skillsComplete: 0 }
+deactivate Lib
+
+Home --> Learner : progress summary shown\n(0 XP · 0 skills · 0 projects)
+deactivate Home
+
+== Subsequent visit — progress restored ==
+
+Learner -> Home : returns to site
+activate Home
+Home -> LS : getItem("dragonpy-profile-id")
+LS --> Home : "uuid-123"
+
+Home -> Lib : loadProgress("uuid-123")
+activate Lib
+Lib -> DB : SELECT * FROM path_completions\nWHERE profile_id = "uuid-123"
+DB --> Lib : [{ skill_id: "variables", level: "easy", xp_awarded: 50 }, ...]
+Lib --> Home : { completions, totalXp: 150, skillsComplete: 1 }
+deactivate Lib
+
+Home --> Learner : progress summary restored
+deactivate Home
+
+== Exercise complete — progress saved ==
+
+Learner -> Panel : runs code, output matches
+activate Panel
+
+Panel -> Lib : saveCompletion("uuid-123", "variables", "mid", 100)
+activate Lib
+Lib -> DB : INSERT INTO path_completions\n(profile_id, skill_id, level, xp_awarded)\nON CONFLICT DO NOTHING
+DB --> Lib : ok
+Lib -> Hook : invalidate / refetch
+deactivate Lib
+
+Hook -> DB : re-fetch completions for "uuid-123"
+DB --> Hook : updated completions
+Hook --> Panel : skillStates updated (XP live in TitleBar)
+
+Panel --> Learner : XPRewardBanner shown
+deactivate Panel
+
+== Reset progress ==
+
+Learner -> Home : clicks "Reset my progress"
+activate Home
+Home -> Lib : resetProgress("uuid-123")
+activate Lib
+Lib -> DB : DELETE FROM path_completions\nWHERE profile_id = "uuid-123"
+DB --> Lib : ok
+Lib --> Home : done
+deactivate Lib
+
+Home --> Learner : progress summary shows 0 XP
+deactivate Home
+
+@enduml

@@ -1,0 +1,111 @@
+@startuml PY-013-component
+title PY-013 · Progress Persistence — Component Diagram
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #1e1e2e
+skinparam component {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam note {
+  BackgroundColor #313244
+  BorderColor #555577
+  FontColor #cdd6f4
+}
+skinparam ArrowColor #89b4fa
+
+package "app/ (pages)" {
+  component [Home page\napp/page.tsx] as HomePage
+  note right of HomePage
+    Updated to show progress summary:
+      total XP, skills complete,
+      projects complete (0 at MVP).
+    Renders UsernameModal on
+    first visit (no profile in LS).
+  end note
+}
+
+package "components/ (new)" {
+  component [UsernameModal] as Modal
+  note right of Modal
+    Shown on first visit only.
+    Single text input + Start button.
+    Calls createProfile(), stores
+    profile_id in localStorage.
+  end note
+
+  component [ProgressSummary] as Summary
+  note right of Summary
+    Displays on home page:
+      XP total · skills complete
+      projects complete
+    Reads from useSkillProgress.
+  end note
+
+  component [ResetProgressButton] as Reset
+  note right of Reset
+    Confirms before resetting.
+    Calls resetProgress(),
+    clears localStorage profile-id.
+  end note
+}
+
+package "hooks/ (updated)" {
+  component [useSkillProgress] as Hook
+  note right of Hook
+    Updated: reads from Supabase
+    via lib/progress.ts instead of
+    raw localStorage.
+    Falls back to {} while loading.
+  end note
+}
+
+package "lib/ (new / updated)" {
+  component [lib/supabase.ts] as SupabaseClient
+  note right of SupabaseClient
+    Creates & exports the
+    Supabase browser client.
+    Reads NEXT_PUBLIC_SUPABASE_URL
+    and NEXT_PUBLIC_SUPABASE_ANON_KEY.
+  end note
+
+  component [lib/progress.ts] as ProgressLib
+  note right of ProgressLib
+    createProfile(username)
+    loadProgress(profileId)
+    saveCompletion(profileId, skillId, level, xp)
+    resetProgress(profileId)
+    Wraps all Supabase queries.
+  end note
+}
+
+package "Supabase (external)" {
+  component [profiles table] as ProfilesTable
+  component [path_completions table] as CompletionsTable
+}
+
+package "localStorage (browser)" {
+  component ["dragonpy-profile-id"] as LSProfile
+  note right of LSProfile
+    Stores UUID of the current
+    learner's profile row.
+    Cleared on reset.
+  end note
+}
+
+HomePage --> Modal : shows if no profile
+HomePage --> Summary
+HomePage --> Reset
+
+Modal ..> ProgressLib : createProfile()
+Modal ..> LSProfile : writes profile_id
+
+Hook ..> ProgressLib : loadProgress()
+Hook ..> LSProfile : reads profile_id
+
+ProgressLib ..> SupabaseClient : uses
+SupabaseClient ..> ProfilesTable : INSERT / SELECT
+SupabaseClient ..> CompletionsTable : INSERT / SELECT / DELETE
+
+@enduml

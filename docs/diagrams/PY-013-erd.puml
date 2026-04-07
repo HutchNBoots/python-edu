@@ -1,0 +1,64 @@
+@startuml PY-013-erd
+title PY-013 · Learner Profile + Progress — ERD
+
+skinparam backgroundColor #1e1e2e
+skinparam class {
+  BackgroundColor #2a2a3d
+  BorderColor #555577
+  FontColor #cdd6f4
+  HeaderBackgroundColor #313244
+}
+skinparam ArrowColor #89b4fa
+skinparam NoteBackgroundColor #313244
+skinparam NoteBorderColor #555577
+skinparam NoteFontColor #cdd6f4
+
+entity "profiles" as Profile {
+  * id         : uuid  <<PK, default gen_random_uuid()>>
+  --
+  * username   : text  <<unique, not null>>
+  * created_at : timestamptz <<default now()>>
+}
+
+note right of Profile
+  Created on first visit when
+  learner enters their username.
+  No password — username is the
+  only identifier at MVP.
+  profile_id stored in localStorage
+  to re-identify the learner on
+  subsequent visits.
+end note
+
+entity "path_completions" as Completion {
+  * id          : uuid  <<PK, default gen_random_uuid()>>
+  --
+  * profile_id  : uuid  <<FK → profiles.id>>
+  * skill_id    : text  <<e.g. "variables">>
+  * level       : text  <<"easy" | "mid" | "hard">>
+  * xp_awarded  : int
+  * completed_at: timestamptz <<default now()>>
+  --
+  unique(profile_id, skill_id, level)
+}
+
+note right of Completion
+  One row per completed path.
+  The unique constraint prevents
+  duplicate XP awards.
+  XP total = SUM(xp_awarded)
+  for a given profile_id.
+end note
+
+Profile "1" --o{ "0..*" Completion : has
+
+note bottom of Profile
+  Derived fields (computed at query time,
+  never stored):
+    total_xp      = SUM(xp_awarded)
+    skills_complete = COUNT of skill_ids
+                      where all 3 levels present
+    projects_complete = 0 until PY-007+
+end note
+
+@enduml
