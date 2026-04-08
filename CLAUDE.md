@@ -27,4 +27,5 @@ Hosting:        Vercel
 - Keep components small and single-purpose
 - All lesson content lives in /content/ as markdown files
 - Never store lesson content in the database
+- Before modifying any existing component, explicitly state which story originally built it and confirm the change is intentional. If a story requires changes to a shared component such as TitleBar, NavLink, or any layout component, list those changes in the diagram review before touching any code.
 - Commit after each story: "feat(PY-00X): short description"
