@@ -1,0 +1,65 @@
+@startuml PY-012-component
+title PY-012 — Newspaper Guessing Game (Capstone) · Component Diagram
+
+package "Route: /projects/pj-5" {
+  component [ProjectPage\n(server component)] as Page
+}
+
+package "Shell (reused)" {
+  component [ProjectShell\n«client»] as Shell
+  component [TitleBar] as TitleBar
+  component [ProjectBar] as ProjectBar
+}
+
+package "Left column" {
+  component [ProjectPanel] as Panel
+  component [ConceptSummary\n(capstone edition)] as Concepts
+  note right of Concepts
+    Reveals on completion.\n
+    Covers ALL skills from\n
+    all 5 projects — acts as\n
+    the congratulations screen.
+  end note
+}
+
+package "Right column" {
+  component [ProjectCodePanel\n«client»] as CodePanel
+  component [CodeEditor] as Editor
+  note right of Editor
+    players dict, sessions list,\n
+    secret_word pre-filled.\n
+    Loop header pre-built.\n
+    Tasks 1 & 2 stubbed with pass.
+  end note
+  component [OutputPanel] as Output
+  component [SolutionReveal] as Solution
+  component [ProjectBadge\n(capstone 🗞️)] as Badge
+}
+
+package "Lib / Data" {
+  component [getProjectContent()\n«lib»] as GetData
+  component [useProjectProgress\n«hook»] as Hook
+  component [pyodide.runCode()\n«lib»] as Pyodide
+  database "/content/projects/\npj-5.md" as Content
+  note right of Content
+    keyword: "Leaderboard"\n
+    unlock: core mid +\n
+    functions/files/dicts easy
+  end note
+}
+
+Page --> Shell
+Shell --> TitleBar
+Shell --> ProjectBar
+Shell --> Panel
+Shell --> CodePanel
+Shell ..> GetData
+Panel --> Concepts
+CodePanel --> Editor
+CodePanel --> Output
+CodePanel --> Solution
+CodePanel --> Badge
+CodePanel ..> Pyodide
+CodePanel ..> Hook
+
+@enduml

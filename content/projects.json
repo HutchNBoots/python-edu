@@ -60,6 +60,7 @@
     {
       "id": "pj-5",
       "name": "Newspaper guessing game",
+      "href": "/projects/pj-5",
       "description": "The ultimate challenge — a multi-player login game with persistent scores and a top-5 leaderboard.",
       "complexity": "advanced",
       "badgeIcon": "🗞️",

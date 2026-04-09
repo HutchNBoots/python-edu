@@ -1,0 +1,31 @@
+@startuml PY-012-erd
+title PY-012 — Newspaper Guessing Game · Data Model
+
+entity "players dict" {
+  * username : string  <<key>>
+  * password : string
+}
+
+entity "Session" {
+  * username : string
+  * password : string
+  * guesses : list[string]
+}
+
+entity "scores dict" {
+  * username : string  <<key>>
+  * score : int
+}
+
+entity "secret_word" {
+  * value : string
+  note "e.g. PYTHON — letters\nlearner guesses against this"
+}
+
+Session }o--|| "players dict" : "validated against"
+Session ||--o{ "scores dict" : "contributes to (if valid)"
+"scores dict" ..> secret_word : "count of guesses\nfound in"
+
+note "All state is in Python\nvariables/dicts — no external DB.\nScores persist for the session."
+
+@enduml

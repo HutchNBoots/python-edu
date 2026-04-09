@@ -1,0 +1,37 @@
+@startuml PY-012-sequence
+title PY-012 — Newspaper Guessing Game · Sequence: Login → Game → Leaderboard
+
+actor Learner
+participant "ProjectCodePanel\n«client»" as CodePanel
+participant "pyodide.runCode()\n«lib»" as Pyodide
+participant "useProjectProgress\n«hook»" as Hook
+participant "localStorage" as Store
+
+Learner -> CodePanel : fills in login validation + leaderboard, clicks Run
+CodePanel -> Pyodide : runCode(learnerCode)
+
+loop for each session in sessions
+  Pyodide -> Pyodide : check username in players dict
+  Pyodide -> Pyodide : check password matches
+  alt valid login
+    Pyodide -> Pyodide : print f"{username} logged in"
+    Pyodide -> Pyodide : count guesses in secret_word
+    Pyodide -> Pyodide : scores[username] = correct count
+  else invalid
+    Pyodide -> Pyodide : print f"{username}: invalid login"
+  end
+end
+
+Pyodide -> Pyodide : sort scores by value descending
+Pyodide -> Pyodide : print "--- Leaderboard ---"
+Pyodide -> Pyodide : print each player and score
+Pyodide --> CodePanel : { output containing "Leaderboard", rawError: null }
+
+CodePanel -> CodePanel : checkKeywords(output, ["Leaderboard"])
+note right : found → complete
+
+CodePanel -> Hook : markComplete("pj-5", xpReward=500)
+Hook -> Store : save project completion
+CodePanel --> Learner : ProjectBadge 🗞️ + XPRewardBanner (+500 XP)\n+ Capstone ConceptSummary revealed\n  (all 5 projects' skills summarised)
+
+@enduml
