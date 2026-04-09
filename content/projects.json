@@ -20,6 +20,7 @@
       "complexity": "starter",
       "badgeIcon": "🔐",
       "xpReward": 200,
+      "href": "/projects/pj-2",
       "unlockGate": [
         { "skillId": "variables",  "minLevel": "easy" },
         { "skillId": "loops",      "minLevel": "easy" },

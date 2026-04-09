@@ -1,0 +1,48 @@
+@startuml PY-009-sequence
+title PY-009 — Caesar Cipher · Sequence: Project Complete → Badge Awarded
+
+actor Learner
+participant "ProjectShell\n«client»" as Shell
+participant "useSkillProgress\n«hook»" as SkillHook
+participant "getProjectContent()\n«lib»" as GetData
+participant "ProjectCodePanel\n«client»" as CodePanel
+participant "pyodide.runCode()\n«lib»" as Pyodide
+participant "useProjectProgress\n«hook»" as ProjHook
+participant "Supabase / localStorage" as Store
+
+== Page Load ==
+
+Learner -> Shell : navigate to /projects/pj-2
+Shell -> SkillHook : isUnlocked("pj-2")?
+SkillHook -> Store : read skill completions
+Store --> SkillHook : variables=easy✓ loops=easy✓ conditions=easy✓
+SkillHook --> Shell : unlocked = true
+Shell -> GetData : getProjectContent("pj-2")
+GetData --> Shell : { scaffoldedCode, solution, expectedKeywords: ["Khoor"], ... }
+Shell --> CodePanel : render(scaffoldedCode)
+CodePanel --> Learner : editor pre-filled with encode/decode stubs
+
+== Attempt Loop ==
+
+loop until "Khoor" in output or 3 failed attempts
+
+  Learner -> CodePanel : edits encode/decode logic, clicks Run
+  CodePanel -> Pyodide : runCode(learnerCode)
+  Pyodide --> CodePanel : { output, rawError }
+
+  alt output contains "Khoor" (case-insensitive)
+    CodePanel -> ProjHook : markComplete("pj-2", xpReward=200)
+    ProjHook -> Store : save project completion
+    CodePanel --> Learner : ProjectBadge 🔐 + XPRewardBanner (+200 XP)\n+ ConceptSummary revealed
+  else failed attempt
+    CodePanel -> ProjHook : incrementAttempts()
+    alt attempts >= 3
+      CodePanel --> Learner : Show solution button
+    else
+      CodePanel --> Learner : try again
+    end
+  end
+
+end
+
+@enduml
