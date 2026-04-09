@@ -217,14 +217,17 @@ describe("ProjectCard — available", () => {
     unmetRequirements: [],
   };
 
-  it("AC3: shows Start button when available", () => {
+  it("AC3: shows Start link when available and project has a page", () => {
     render(<ProjectCard projectState={availableState} />);
-    expect(screen.getByRole("button", { name: /start/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /start/i })).toBeInTheDocument();
   });
 
-  it("AC3: Start button is disabled (stub — PY-007 not built yet)", () => {
+  it("AC3: Start link navigates to the project page", () => {
     render(<ProjectCard projectState={availableState} />);
-    expect(screen.getByRole("button", { name: /start/i })).toBeDisabled();
+    expect(screen.getByRole("link", { name: /start/i })).toHaveAttribute(
+      "href",
+      "/projects/pj-1"
+    );
   });
 
   it("AC2: does not show unmet requirements when available", () => {

@@ -1,0 +1,110 @@
+@startuml PY-007-component
+title PY-007 — Password Checker · Component Diagram
+
+package "Route: /projects/pj-1" {
+  component [ProjectPage\n(server component)] as Page
+}
+
+package "Shell" {
+  component [ProjectShell\n«client»] as Shell
+  note right of Shell
+    Checks unlock gate.
+    Redirects to /projects
+    if locked.
+  end note
+}
+
+package "Chrome" {
+  component [TitleBar] as TitleBar
+  component [ProjectBar] as ProjectBar
+  note right of ProjectBar
+    Shows: project name,
+    badge icon, XP reward,
+    attempt counter (x/3)
+  end note
+}
+
+package "Left column — ProjectPanel" {
+  component [ProjectPanel] as Panel
+  component [InstructionsList] as Instructions
+  note right of Instructions
+    What to fill in:
+    · length check
+    · uppercase check
+    · number check
+  end note
+  component [ConceptSummary] as Concepts
+  note right of Concepts
+    Shown on completion:
+    plain-English summary
+    of Python concepts used
+  end note
+  component [HelpMeButton] as HelpBtn
+}
+
+package "Right column — ProjectCodePanel" {
+  component [ProjectCodePanel\n«client»] as CodePanel
+  component [CodeEditor] as Editor
+  note right of Editor
+    Pre-filled with scaffolded
+    starter code from markdown
+  end note
+  component [OutputPanel] as Output
+  component [SolutionReveal] as Solution
+  note right of Solution
+    Hidden until 3
+    failed attempts
+  end note
+  component [ProjectBadge] as Badge
+  component [XPRewardBanner] as XPBanner
+}
+
+package "Hooks" {
+  component [useProjectProgress\n«hook»] as ProjHook
+  note right of ProjHook
+    Tracks: attempts,
+    completion, XP awarded
+  end note
+  component [useSkillProgress\n«hook»] as SkillHook
+}
+
+package "Lib / Data" {
+  component [getProjectData()\n«lib»] as GetData
+  component [projectGates\n«lib»] as Gates
+  component [pyodide.runCode()\n«lib»] as Pyodide
+  database "/content/projects/\npj-1.md" as Content
+  note right of Content
+    scaffoldedCode,
+    solution,
+    expectedKeywords,
+    instructions
+  end note
+  database "Supabase" as DB
+}
+
+Page --> Shell
+Shell --> TitleBar
+Shell --> ProjectBar
+Shell --> Panel
+Shell --> CodePanel
+Shell ..> GetData : load project data
+Shell ..> SkillHook : unlock gate check
+
+Panel --> Instructions
+Panel --> Concepts
+Panel --> HelpBtn
+
+CodePanel --> Editor
+CodePanel --> Output
+CodePanel --> Solution : after 3 failed attempts
+CodePanel --> Badge    : on completion
+CodePanel --> XPBanner : on completion
+CodePanel ..> Pyodide  : runCode(learnerCode)
+CodePanel ..> ProjHook : track attempts / save completion
+
+ProjHook ..> DB      : persist badge + XP
+SkillHook ..> DB     : read skill completion
+Gates ..> DB         : evaluate unlock gate
+GetData ..> Content  : read markdown
+
+@enduml

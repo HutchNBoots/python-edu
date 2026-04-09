@@ -1,5 +1,6 @@
 import projectsData from "@/content/projects.json";
 import type { PathLevel, SkillState } from "@/lib/skillProgress";
+import type { ProjectCompletions } from "@/lib/projectCompletions";
 
 export type ProjectStatus = "locked" | "available" | "complete";
 
@@ -17,6 +18,7 @@ export interface ProjectDef {
   complexity: "starter" | "mid" | "advanced";
   badgeIcon: string;
   xpReward: number;
+  href?: string;
   unlockGate: Array<{ skillId: string; minLevel: PathLevel }>;
 }
 
@@ -30,8 +32,14 @@ export const PROJECTS: ProjectDef[] = projectsData.projects as ProjectDef[];
 
 export function evaluateProjectState(
   project: ProjectDef,
-  skillStates: SkillState[]
+  skillStates: SkillState[],
+  projectCompletions?: ProjectCompletions
 ): ProjectState {
+  // Check project completions first
+  if (projectCompletions?.[project.id]) {
+    return { def: project, status: "complete", unmetRequirements: [] };
+  }
+
   const unmetRequirements: UnlockRequirement[] = [];
 
   for (const gate of project.unlockGate) {
@@ -53,6 +61,9 @@ export function evaluateProjectState(
   return { def: project, status, unmetRequirements };
 }
 
-export function evaluateAllProjects(skillStates: SkillState[]): ProjectState[] {
-  return PROJECTS.map((p) => evaluateProjectState(p, skillStates));
+export function evaluateAllProjects(
+  skillStates: SkillState[],
+  projectCompletions?: ProjectCompletions
+): ProjectState[] {
+  return PROJECTS.map((p) => evaluateProjectState(p, skillStates, projectCompletions));
 }

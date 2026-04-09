@@ -1,0 +1,73 @@
+@startuml PY-007-sequence
+title PY-007 — Password Checker · Sequence: Learner Completes Project → Badge Awarded
+
+actor Learner
+participant "ProjectShell\n«client»" as Shell
+participant "useSkillProgress\n«hook»" as SkillHook
+participant "getProjectData()\n«lib»" as GetData
+participant "pj-1.md\n«content»" as Content
+participant "ProjectCodePanel\n«client»" as CodePanel
+participant "pyodide.runCode()\n«lib»" as Pyodide
+participant "useProjectProgress\n«hook»" as ProjHook
+participant "Supabase" as DB
+
+== Page Load ==
+
+Learner -> Shell : navigate to /projects/pj-1
+Shell -> SkillHook : isUnlocked("pj-1")?
+SkillHook -> DB : read skill completion for learner
+DB --> SkillHook : variables=easy✓  conditions=easy✓
+SkillHook --> Shell : unlocked = true
+
+Shell -> GetData : getProjectData("pj-1")
+GetData -> Content : read markdown
+Content --> GetData : { scaffoldedCode, solution,\n  expectedKeywords, instructions }
+GetData --> Shell : ProjectData
+
+Shell --> CodePanel : render(scaffoldedCode)
+CodePanel --> Learner : editor pre-filled with starter code
+
+== Attempt Loop ==
+
+loop until correct or attempts = 3
+
+  Learner -> CodePanel : edits code + clicks Run
+  CodePanel -> Pyodide : runCode(learnerCode)
+  Pyodide --> CodePanel : { output, rawError }
+
+  alt rawError present
+    CodePanel --> Learner : friendly error message (PY-003 flow)
+  else output present
+    CodePanel -> CodePanel : validate(output, expectedKeywords)
+
+    alt output passes keyword check
+      note right of CodePanel
+        Checks that output contains
+        at least one of: "weak", "okay",
+        "strong" — case-insensitive
+      end note
+      CodePanel -> ProjHook : markComplete("pj-1", xpReward=200)
+      ProjHook -> DB : upsert project_completions\n{ learnerId, projectId, completedAt, xpEarned }
+      DB --> ProjHook : saved
+      ProjHook --> CodePanel : confirmed
+      CodePanel --> Learner : ProjectBadge 🔒 + XPRewardBanner (+200 XP)\n+ ConceptSummary revealed in left panel
+    else output fails check
+      CodePanel -> ProjHook : incrementAttempts("pj-1")
+      ProjHook --> CodePanel : attempts = n
+
+      alt attempts >= 3
+        CodePanel --> Learner : "Show solution" button appears
+      else attempts < 3
+        CodePanel --> Learner : "Not quite — try again" message
+      end
+    end
+  end
+
+end
+
+== Solution Reveal (if triggered) ==
+
+Learner -> CodePanel : clicks "Show solution"
+CodePanel --> Learner : solution code replaces editor content\n(read-only view, no badge awarded)
+
+@enduml

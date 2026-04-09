@@ -1,3 +1,4 @@
+import Link from "next/link";
 import UnlockRequirements from "@/components/UnlockRequirements";
 import ProjectBadge from "@/components/ProjectBadge";
 import { PROJECTS } from "@/lib/projectGates";
@@ -150,10 +151,31 @@ export default function ProjectCard({ projectState }: ProjectCardProps) {
         />
       )}
 
-      {!isLocked && !isComplete && (
+      {!isLocked && !isComplete && def.href && (
+        <Link
+          href={def.href}
+          aria-label={`Start ${def.name}`}
+          style={{
+            alignSelf: "flex-start",
+            backgroundColor: "var(--accent-primary)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            padding: "8px 18px",
+            fontSize: "13px",
+            fontWeight: 600,
+            textDecoration: "none",
+            display: "inline-block",
+          }}
+        >
+          Start →
+        </Link>
+      )}
+
+      {!isLocked && !isComplete && !def.href && (
         <button
           disabled
-          title="Project pages are coming soon!"
+          title="Coming soon"
           aria-label={`Start ${def.name} — coming soon`}
           style={{
             alignSelf: "flex-start",

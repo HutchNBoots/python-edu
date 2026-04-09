@@ -5,9 +5,10 @@ import { useRef } from "react";
 interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
+  readOnly?: boolean;
 }
 
-export default function CodeEditor({ value, onChange }: CodeEditorProps) {
+export default function CodeEditor({ value, onChange, readOnly = false }: CodeEditorProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -32,7 +33,9 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={handleKeyDown}
       spellCheck={false}
+      readOnly={readOnly}
       aria-label="Python code editor"
+      aria-readonly={readOnly}
       className="themed-scroll themed-scroll-code"
       style={{
         flex: 1,

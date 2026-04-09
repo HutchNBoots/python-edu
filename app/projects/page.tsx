@@ -1,15 +1,23 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import TitleBar from "@/components/TitleBar";
 import ProjectCard from "@/components/ProjectCard";
 import { useSkillProgress } from "@/hooks/useSkillProgress";
 import { evaluateAllProjects, PROJECTS } from "@/lib/projectGates";
+import { loadProjectCompletions } from "@/lib/projectCompletions";
+import type { ProjectCompletions } from "@/lib/projectCompletions";
 
 export default function ProjectsPage() {
   const { skillStates, totalXp, completedCount, isLoaded } = useSkillProgress();
+  const [projectCompletions, setProjectCompletions] = useState<ProjectCompletions>({});
+
+  useEffect(() => {
+    setProjectCompletions(loadProjectCompletions());
+  }, []);
 
   const projectStates = isLoaded
-    ? evaluateAllProjects(skillStates)
+    ? evaluateAllProjects(skillStates, projectCompletions)
     : PROJECTS.map((def) => ({
         def,
         status: "locked" as const,
