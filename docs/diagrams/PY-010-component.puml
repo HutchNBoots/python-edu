@@ -1,0 +1,58 @@
+@startuml PY-010-component
+title PY-010 — Number Guessing Game · Component Diagram
+
+package "Route: /projects/pj-3" {
+  component [ProjectPage\n(server component)] as Page
+}
+
+package "Shell (reused from PY-007)" {
+  component [ProjectShell\n«client»] as Shell
+  component [TitleBar] as TitleBar
+  component [ProjectBar] as ProjectBar
+}
+
+package "Left column" {
+  component [ProjectPanel] as Panel
+  component [ConceptSummary] as Concepts
+}
+
+package "Right column" {
+  component [ProjectCodePanel\n«client»] as CodePanel
+  component [CodeEditor] as Editor
+  note right of Editor
+    Pre-filled with loop structure
+    and if/else stubs — learner
+    fills in guess check and hints
+  end note
+  component [OutputPanel] as Output
+  component [SolutionReveal] as Solution
+  component [ProjectBadge] as Badge
+}
+
+package "Lib / Data" {
+  component [getProjectContent()\n«lib»] as GetData
+  component [useProjectProgress\n«hook»] as Hook
+  component [pyodide.runCode()\n«lib»] as Pyodide
+  database "/content/projects/\npj-3.md" as Content
+  note right of Content
+    keyword: "Got it"
+    unlock gate: variables/loops/
+    conditions mid path
+  end note
+}
+
+Page --> Shell
+Shell --> TitleBar
+Shell --> ProjectBar
+Shell --> Panel
+Shell --> CodePanel
+Shell ..> GetData
+Panel --> Concepts
+CodePanel --> Editor
+CodePanel --> Output
+CodePanel --> Solution
+CodePanel --> Badge
+CodePanel ..> Pyodide
+CodePanel ..> Hook
+
+@enduml

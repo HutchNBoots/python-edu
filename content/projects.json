@@ -34,6 +34,7 @@
       "complexity": "mid",
       "badgeIcon": "🎯",
       "xpReward": 300,
+      "href": "/projects/pj-3",
       "unlockGate": [
         { "skillId": "variables",  "minLevel": "mid" },
         { "skillId": "loops",      "minLevel": "mid" },

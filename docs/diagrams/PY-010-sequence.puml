@@ -1,0 +1,48 @@
+@startuml PY-010-sequence
+title PY-010 — Number Guessing Game · Sequence: Project Complete → Badge Awarded
+
+actor Learner
+participant "ProjectShell\n«client»" as Shell
+participant "useSkillProgress\n«hook»" as SkillHook
+participant "getProjectContent()\n«lib»" as GetData
+participant "ProjectCodePanel\n«client»" as CodePanel
+participant "pyodide.runCode()\n«lib»" as Pyodide
+participant "useProjectProgress\n«hook»" as ProjHook
+participant "localStorage" as Store
+
+== Page Load ==
+
+Learner -> Shell : navigate to /projects/pj-3
+Shell -> SkillHook : isUnlocked("pj-3")?
+SkillHook -> Store : read skill completions
+Store --> SkillHook : variables=mid✓ loops=mid✓ conditions=mid✓
+SkillHook --> Shell : unlocked = true
+Shell -> GetData : getProjectContent("pj-3")
+GetData --> Shell : { scaffoldedCode, solution, expectedKeywords: ["Got it"], ... }
+Shell --> CodePanel : render(scaffoldedCode)
+CodePanel --> Learner : editor pre-filled with game loop stubs
+
+== Attempt Loop ==
+
+loop until "Got it" in output or 3 failed attempts
+
+  Learner -> CodePanel : fills in guess check + hints, clicks Run
+  CodePanel -> Pyodide : runCode(learnerCode)
+  Pyodide --> CodePanel : { output, rawError }
+
+  alt output contains "Got it" (case-insensitive)
+    CodePanel -> ProjHook : markComplete("pj-3", xpReward=300)
+    ProjHook -> Store : save project completion
+    CodePanel --> Learner : ProjectBadge 🎯 + XPRewardBanner (+300 XP)\n+ ConceptSummary revealed
+  else failed attempt
+    CodePanel -> ProjHook : incrementAttempts()
+    alt attempts >= 3
+      CodePanel --> Learner : Show solution button
+    else
+      CodePanel --> Learner : try again
+    end
+  end
+
+end
+
+@enduml
