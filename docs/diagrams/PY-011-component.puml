@@ -1,0 +1,62 @@
+@startuml PY-011-component
+title PY-011 — Quiz Game with Scoreboard · Component Diagram
+
+package "Route: /projects/pj-4" {
+  component [ProjectPage\n(server component)] as Page
+}
+
+package "Shell (reused)" {
+  component [ProjectShell\n«client»] as Shell
+  component [TitleBar] as TitleBar
+  component [ProjectBar] as ProjectBar
+}
+
+package "Left column" {
+  component [ProjectPanel] as Panel
+  component [ConceptSummary] as Concepts
+}
+
+package "Right column" {
+  component [ProjectCodePanel\n«client»] as CodePanel
+  component [CodeEditor] as Editor
+  note right of Editor
+    questions list + player_answers\n
+    pre-filled; Tasks 2 & 3\n
+    (print score, file I/O)\n
+    provided; Task 1 (loop)\n
+    stubbed with pass
+  end note
+  component [OutputPanel] as Output
+  component [SolutionReveal] as Solution
+  component [ProjectBadge] as Badge
+}
+
+package "Lib / Data" {
+  component [getProjectContent()\n«lib»] as GetData
+  component [useProjectProgress\n«hook»] as Hook
+  component [pyodide.runCode()\n«lib»] as Pyodide
+  database "/content/projects/\npj-4.md" as Content
+  note right of Content
+    keyword: "Correct!"\n
+    unlock: core mid +\n
+    lists/files easy
+  end note
+  database "Pyodide virtual FS\nscores.txt" as VFS
+}
+
+Page --> Shell
+Shell --> TitleBar
+Shell --> ProjectBar
+Shell --> Panel
+Shell --> CodePanel
+Shell ..> GetData
+Panel --> Concepts
+CodePanel --> Editor
+CodePanel --> Output
+CodePanel --> Solution
+CodePanel --> Badge
+CodePanel ..> Pyodide
+CodePanel ..> Hook
+Pyodide ..> VFS : file read/write
+
+@enduml

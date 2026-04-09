@@ -1,0 +1,24 @@
+@startuml PY-011-erd
+title PY-011 — Quiz Game · Data Model
+
+entity "Question" {
+  * question : string
+  * answer : string
+}
+
+entity "PlayerAnswer" {
+  * value : string
+}
+
+entity "ScoreEntry" {
+  * score : int
+  * total : int
+  note "appended to scores.txt\nin Pyodide virtual FS"
+}
+
+Question ||--|| PlayerAnswer : "paired via zip()"
+PlayerAnswer ..> ScoreEntry : "checked → contributes to"
+
+note "All data lives in Python\nvariables/lists in the learner's\ncode — no external DB"
+
+@enduml

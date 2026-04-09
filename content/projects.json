@@ -44,6 +44,7 @@
     {
       "id": "pj-4",
       "name": "Quiz game with scoreboard",
+      "href": "/projects/pj-4",
       "description": "Build a quiz your friends can play, with a saved high-score leaderboard.",
       "complexity": "mid",
       "badgeIcon": "🏆",

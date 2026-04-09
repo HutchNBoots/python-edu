@@ -1,0 +1,29 @@
+@startuml PY-011-sequence
+title PY-011 — Quiz Game · Sequence: Quiz run → Score saved → Leaderboard displayed
+
+actor Learner
+participant "ProjectCodePanel\n«client»" as CodePanel
+participant "pyodide.runCode()\n«lib»" as Pyodide
+participant "Virtual FS\nscores.txt" as VFS
+participant "useProjectProgress\n«hook»" as Hook
+participant "localStorage" as Store
+
+Learner -> CodePanel : fills in question loop, clicks Run
+CodePanel -> Pyodide : runCode(learnerCode)
+
+Pyodide -> Pyodide : loop through zip(questions, player_answers)
+Pyodide -> Pyodide : check answer (case-insensitive)
+Pyodide -> Pyodide : print "Correct!" or wrong message
+Pyodide -> Pyodide : print f"Your score: {score} out of {len(questions)}"
+Pyodide -> VFS : open("scores.txt", "a") — append score
+Pyodide -> VFS : open("scores.txt", "r") — read leaderboard
+Pyodide --> CodePanel : { output containing "Correct!", rawError: null }
+
+CodePanel -> CodePanel : checkKeywords(output, ["Correct!"])
+note right : "Correct!" found → complete
+
+CodePanel -> Hook : markComplete("pj-4", xpReward=400)
+Hook -> Store : save project completion
+CodePanel --> Learner : ProjectBadge 🏆 + XPRewardBanner (+400 XP)\n+ ConceptSummary revealed
+
+@enduml
